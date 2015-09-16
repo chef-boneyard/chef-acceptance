@@ -17,7 +17,7 @@ class ChefAcceptance
       cookbooks = Dir["#{cookbooks_path}/*"]
       cookbooks.each do | cookbook |
         # TODO: don't fret. this is just a quick hack
-        command = "cd #{cookbook}; kitchen test all"
+        command = "cd #{cookbook}/acceptance; kitchen test all"
         system(command)
       end
     end
