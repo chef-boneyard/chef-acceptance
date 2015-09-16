@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+# -*- mode: ruby -*-
+
+$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+require 'chef-acceptance/cli'
+ChefAcceptance::Cli.start
