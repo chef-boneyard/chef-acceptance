@@ -21,5 +21,15 @@ class ChefAcceptance
         system(command)
       end
     end
+
+    # private
+    #
+    # def for_cookbooks
+    #   cookbooks_path = "#{File.dirname(__FILE__)}/../../cookbooks"
+    #   cookbooks = Dir["#{cookbooks_path}/*"]
+    #   cookbooks.each do | cookbook |
+    #     yield
+    #   end
+    # end
   end
 end
