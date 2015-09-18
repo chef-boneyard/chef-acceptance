@@ -6,7 +6,6 @@ If you intend to run Sauce-related tests you'll need to [configure a Sauce accou
 
 ```
 bundle install
-bundle exec berks-monolith install
 ```
 
 ```
