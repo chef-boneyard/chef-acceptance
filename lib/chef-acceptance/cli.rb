@@ -23,9 +23,7 @@ class ChefAcceptance
     def download_suite(*name)
       if name.empty?
         puts "No suite names provided. Downlading all suites."
-        @config.each { |suite|
-          clone(suite)
-        }
+        @config.each { |suite| clone(suite) }
       else
         suites = @config.select { |suite| name.include?(suite['name']) }
         suites.each { |suite | clone(suite) }
@@ -38,9 +36,7 @@ class ChefAcceptance
     def update_suite(*name)
       if name.empty?
         puts "No suite names provided. Updating all suites."
-        @config.each { |suite|
-          pull(suite)
-        }
+        @config.each { |suite| pull(suite) }
       else
         suites = @config.select { |suite| name.include?(suite['name']) }
         suites.each { |suite | pull(suite) }
@@ -60,9 +56,7 @@ class ChefAcceptance
       else
         suites = @config.select { |suite| name.include?(suite['name']) }
         puts "Removing test suites:\n#{name.join("\n")}"
-        suites.each { |suite |
-          FileUtils.rm_rf(File.join(@suites_dir, suite['name']))
-        }
+        suites.each { |suite | FileUtils.rm_rf(File.join(@suites_dir, suite['name'])) }
       end
     end
 
