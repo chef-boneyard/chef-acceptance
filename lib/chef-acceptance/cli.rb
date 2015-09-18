@@ -5,7 +5,6 @@ require 'fileutils'
 
 class ChefAcceptance
   class Cli < Thor
-
     def initialize(*args)
       super
       @project_root = "#{File.dirname(__FILE__)}/../.."
@@ -14,20 +13,13 @@ class ChefAcceptance
       @config = YAML.load_file(File.join(@project_root, @acceptance_yaml))
     end
 
-    desc 'list suites', 'list test suites'
-    def list
-      config = YAML.load_file(@config)
-
-      sorted = config.sort_by { |k,v|
-        k['name']
-      }
-
-      sorted.each { |n|
-        puts n['name']
-      }
+    desc 'list-suites', 'List configured test suites'
+    def list_suites
+      sorted = @config.sort_by { |k,v| k['name'] }
+      sorted.each { |suite| puts "#{suite['name']}(#{suite['git']}:#{suite['branch']})" }
     end
 
-    desc 'download suite', 'download suite'
+    desc 'download-suite [*SUITE_NAME]', 'Download a list of suites. No argument will download all available test suites'
     def download_suite(*name)
       if name.empty?
         puts "No suite names provided. Downlading all suites."
@@ -42,7 +34,7 @@ class ChefAcceptance
       print_errors
     end
 
-    desc 'update suites', 'update suites'
+    desc 'update-suites [*SUITE_NAME]', 'Update a list of suites. No argument will update all available test suites'
     def update_suite(*name)
       if name.empty?
         puts "No suite names provided. Updating all suites."
@@ -57,7 +49,7 @@ class ChefAcceptance
       print_errors
     end
 
-    desc 'delete suites', 'delete suites'
+    desc 'delete-suite [*SUITE_NAME|all]', 'Delete downloaded suites'
     def delete_suite(*name)
       if name.empty?
         puts "No suite names provided. Specify a list of suites or use 'all'"
@@ -74,7 +66,8 @@ class ChefAcceptance
       end
     end
 
-    desc 'run TESTS', 'run acceptance tests'
+    # TODO: rewrite to use kithen api
+    desc 'test []', 'Run acceptance tests'
     option :omnibus_project
     option :omnibus_version
     def test
@@ -90,7 +83,8 @@ class ChefAcceptance
       end
     end
 
-    desc 'destroy INSTANCES', 'destroy instances'
+    # TODO: rewrite to use kithen api
+    desc 'destroy', 'Destroy all kitchen instances'
     def destroy
       cookbooks = Dir["#{@suites_dir}/*"]
       cookbooks.each do | cookbook |
@@ -191,8 +185,10 @@ class ChefAcceptance
       # Prints error collection on new lines
       #
       def print_errors
-        puts "\nErrors"
-        puts @errors.join("\n") if @errors
+        if @errors
+          puts "\nErrors"
+          puts @errors.join("\n")
+        end
       end
     }
   end
