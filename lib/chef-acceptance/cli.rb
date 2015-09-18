@@ -45,14 +45,15 @@ class ChefAcceptance
       print_errors
     end
 
-    desc 'delete-suite [*SUITE_NAME|all]', 'Delete downloaded suites'
+    desc 'delete-suite [*SUITE_NAME]', 'Delete downloaded suites'
+    option :all, :type => :boolean
     def delete_suite(*name)
-      if name.empty?
-        puts "No suite names provided. Specify a list of suites or use 'all'"
-        return
-      elsif name[0] == 'all'
+      if options[:all]
         puts 'Removing all test suites'
         FileUtils.rm_rf(@suites_dir)
+      elsif name.empty?
+        puts "No suite names provided. Specify a list of suites or use '--all'"
+        return
       else
         suites = @config.select { |suite| name.include?(suite['name']) }
         puts "Removing test suites:\n#{name.join("\n")}"
