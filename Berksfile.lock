@@ -1,7 +1,0 @@
-DEPENDENCIES
-  chef-acceptance-example
-    git: git@github.com:chef-cookbooks/chef-acceptance-example.git
-    revision: 1353bedfaab9d5fcd743297574c70167d1bd7f2a
-
-GRAPH
-  chef-acceptance-example (0.1.0)

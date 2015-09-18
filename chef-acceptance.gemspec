@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.files       = ["lib/example.rb"]
   s.homepage    = 'https://rubygems.org/gems/example'
 
-  s.add_dependency 'berks-monolith', '~> 0.1.1'
   s.add_dependency 'thor', '~> 0.19.1'
+  s.add_dependency 'git', '~> 1.2.9.1'
 
   s.require_path = 'lib'
    s.executables = ['chef-acceptance']

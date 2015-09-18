@@ -1,0 +1,18 @@
+- name: chef-acceptance-example
+  git: 'git@github.com:chef-cookbooks/chef-acceptance-example.git' # required
+  # path: will be supported
+  branch: 'master' # default
+  directory: 'acceptance' # default
+  kitchen_config: .kitchen.yml # default
+  kitchen_test: all # default (ubuntu-, some_instance, -some_suite, etc)
+
+- name: chef
+  git: 'git@github.com:chef/chef.git'
+  branch: 'pw/acceptance'
+
+- name: idontexist
+  git: 'git@github.com:chef/idontexist.git'
+
+- name: chef-ingredient
+  git: 'git@github.com:chef-cookbooks/chef-ingredient.git'
+  branch: 'idontexist'
