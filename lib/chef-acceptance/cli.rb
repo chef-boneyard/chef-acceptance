@@ -2,9 +2,12 @@ require 'thor'
 require 'yaml'
 require 'git'
 require 'fileutils'
+require 'command_line_reporter'
 
 class ChefAcceptance
   class Cli < Thor
+    include CommandLineReporter
+
     def initialize(*args)
       super
       @project_root = "#{File.dirname(__FILE__)}/../.."
@@ -16,7 +19,7 @@ class ChefAcceptance
     desc 'list-suites', 'List configured test suites'
     def list_suites
       sorted = @config.sort_by { |k,v| k['name'] }
-      sorted.each { |suite| puts "#{suite['name']}(#{suite['git']}:#{suite['branch']})" }
+      sorted.each { |suite| puts "#{suite['name']} (#{suite['git']}:#{suite['branch']})" }
     end
 
     desc 'download-suite [*SUITE_NAME]', 'Download a list of suites. No argument will download all available test suites'
@@ -63,7 +66,7 @@ class ChefAcceptance
       end
     end
 
-    desc 'TEST_SUITE', 'Run acceptance tests'
+    desc 'test *SUITE_NAME', 'Run acceptance tests'
     option :project, :required => true
     option :project_version, :default => 'latest'
     option :channel, :default => 'stable' # stable, current, unstable(artifactory)
