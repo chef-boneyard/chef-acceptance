@@ -25,8 +25,9 @@ class ChefAcceptance
         puts "No suite names provided. Downlading all suites."
         @config.each { |suite| clone(suite) }
       else
-        suites = @config.select { |suite| name.include?(suite['name']) }
-        suites.each { |suite | clone(suite) }
+        selected_suites = @config.select { |suite| name.include?(suite['name']) }
+        # TODO: parallelize
+        selected_suites.each { |suite | clone(suite) }
       end
 
       print_errors
@@ -38,8 +39,9 @@ class ChefAcceptance
         puts "No suite names provided. Updating all suites."
         @config.each { |suite| pull(suite) }
       else
-        suites = @config.select { |suite| name.include?(suite['name']) }
-        suites.each { |suite | pull(suite) }
+        selected_suites = @config.select { |suite| name.include?(suite['name']) }
+        # TODO: parallelize
+        selected_suites.each { |suite | pull(suite) }
       end
 
       print_errors
@@ -55,25 +57,29 @@ class ChefAcceptance
         puts "No suite names provided. Specify a list of suites or use '--all'"
         return
       else
-        suites = @config.select { |suite| name.include?(suite['name']) }
+        selected_suites = @config.select { |suite| name.include?(suite['name']) }
         puts "Removing test suites:\n#{name.join("\n")}"
-        suites.each { |suite | FileUtils.rm_rf(File.join(@suites_dir, suite['name'])) }
+        selected_suites.each { |suite | FileUtils.rm_rf(File.join(@suites_dir, suite['name'])) }
       end
     end
 
-    # TODO: rewrite to use kithen api
-    desc 'test []', 'Run acceptance tests'
-    option :omnibus_project
-    option :omnibus_version
-    def test
-      # TODO: pass suites option and filter
-      env_vars = []
-      env_vars << "PROJECT_NAME=#{options[:omnibus_project]}" if options[:omnibus_project]
-      env_vars << "PROJECT_VERSION=#{options[:omnibus_version]}" if options[:omnibus_version]
-      cookbooks = Dir["#{@suites_dir}/*"]
-      cookbooks.each do | cookbook |
+    desc 'TEST_SUITE', 'Run acceptance tests'
+    option :project, :required => true
+    option :project_version, :default => 'latest'
+    option :channel, :default => 'stable' # stable, current, unstable(artifactory)
+    def test(*name)
+      if name.empty?
+        puts "Must provide at least one test suite"
+        exit 1
+      end
+      env_vars = [ "PROJECT_NAME=#{options[:project]}" ]
+      env_vars << "PROJECT_VERSION=#{options[:project_version]}"
+      env_vars << "PROJECT_CHANNEL=#{options[:channel]}"
+      selected_suites = @config.select { |suite| name.include?(suite['name']) }
+      selected_suites.each do | suite |
         # TODO: don't fret. this is just a quick hack
-        command = "cd #{cookbook}/acceptance; #{env_vars.join(' ')} kitchen test all"
+        # TODO: rewrite to use kithen api
+        command = "cd #{suite['name']}/acceptance; #{env_vars.join(' ')} kitchen test all"
         system(command)
       end
     end
@@ -81,10 +87,9 @@ class ChefAcceptance
     # TODO: rewrite to use kithen api
     desc 'destroy', 'Destroy all kitchen instances'
     def destroy
-      cookbooks = Dir["#{@suites_dir}/*"]
-      cookbooks.each do | cookbook |
+      Dir["#{@suites_dir}/*"].each do | suite |
         # TODO: don't fret. this is just a quick hack
-        command = "cd #{cookbook}/acceptance; kitchen destroy -c 10"
+        command = "cd #{suite}/acceptance; kitchen destroy -c 10"
         system(command)
       end
     end
@@ -162,6 +167,8 @@ class ChefAcceptance
       #
       # @param suite_name [String] test suite name
       #
+      # @return [Git::Base] the Git::Base instance
+      #
       def git_open(suite_name)
         Git.open(File.join(@suites_dir, suite_name))
       end
@@ -185,6 +192,6 @@ class ChefAcceptance
           puts @errors.join("\n")
         end
       end
-    }
+    } # end no_commands
   end
 end

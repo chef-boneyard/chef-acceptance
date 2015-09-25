@@ -1,3 +1,4 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gemspec
+gem 'thor', '~> 0.19.1'
+gem 'git', '~> 1.2.9.1'
