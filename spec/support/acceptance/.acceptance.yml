@@ -1,0 +1,4 @@
+---
+project_name: chef-acceptance
+version: latest
+channel: current
