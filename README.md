@@ -17,7 +17,7 @@ acceptance
 │   │       └── recipes
 │   │           ├── destroy.rb
 │   │           ├── provision.rb
-│   │           └── test.rb
+│   │           └── verify.rb
 │   ├── .kitchen.yml
 │   ├── metadata.rb
 │   └── recipes
@@ -29,7 +29,7 @@ acceptance
     │       └── recipes
     │           ├── destroy.rb
     │           ├── provision.rb
-    │           └── test.rb
+    │           └── verify.rb
     ├── .kitchen.yml
     ├── metadata.rb
     └── recipes
