@@ -44,9 +44,14 @@ Now you can run your acceptance tests as below:
 ```
 # chef-acceptance <command> <suite-name> [options]
 chef-acceptance provision spincycle
-chef-acceptance test spincycle
+chef-acceptance verify spincycle
 chef-acceptance destroy spincycle
+
+# Run the commands in sequence
+chef-acceptance test spincycle
 ```
+
+#### Not implemented
 
 Once your acceptance tests are strong you can add this to your build cookbook to run your tests in Chef Delivery:
 
@@ -57,7 +62,7 @@ chef_acceptance 'spincycle' do
 end
 
 chef_acceptance 'spincycle' do
-  action :test
+  action :verify
 end
 ```
 
@@ -66,11 +71,16 @@ end
 `chef-acceptance provision <suite-name>`
 Runs the provision recipe for the given acceptance suite.
 
-`chef-acceptance test <suite-name>`
+`chef-acceptance verify <suite-name>`
 Runs the tests for the given acceptance suite.
 
 `chef-acceptance destroy <suite-name>`
 Destroy your acceptance setup.
+
+`chef-acceptance test <suite-name>`
+Runs the provision, verify, and destroy recipes for the given acceptance suite.
+
+#### Not implemented
 
 `chef-acceptance generate <suite-name>`
 Generates a skeleton acceptance test suite that you can modify.
