@@ -150,9 +150,26 @@ context 'ChefAcceptance::Cli' do
     end
   end
 
-  context '#executable_installed!' do
+  context 'generate command' do
+    let(:command) { :generate }
+    let(:test_suite) { 'foo' }
+
+    it 'generates and runs' do
+      Dir.mktmpdir do |dir|
+        Dir.chdir(dir)
+        FileUtils.mkpath 'acceptance'
+        Dir.chdir 'acceptance'
+        expect(capture(:stdout) { cli.send(command, test_suite) }).to match(/chef-acceptance test #{test_suite}/)
+        expect { cli.send(command, test_suite) }.to raise_error(/Test suite '#{test_suite}' already exists./)
+        cli.options = { destroy: 'always' }
+        cli.send(:test, test_suite)
+      end
+    end
+  end
+
+  context '#executable_installed?' do
     it 'fails when not found' do
-      expect { cli.executable_installed! 'betterlucknexttime' }.to raise_error(/betterlucknexttime executable not installed/)
+      expect(cli.executable_installed?('betterlucknexttime')).to be false
     end
   end
 end
