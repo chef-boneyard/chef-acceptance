@@ -110,3 +110,8 @@ acceptance
 ```
 
 You will notice that in this example, acceptance suites are using Test Kitchen. But you are not tied to it. You can use any setup you'd like.
+
+## Change Log
+The [change log](CHANGELOG.md) for this project follows the principles outlined from http://keepachangelog.com/.
+
+## Releasing chef-acceptance
