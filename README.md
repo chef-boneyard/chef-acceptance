@@ -81,6 +81,7 @@ end
 ```
 
 ## Example project
+
 ```
 acceptance
 ├── lamont-ci
@@ -109,9 +110,24 @@ acceptance
         └── default.rb
 ```
 
-You will notice that in this example, acceptance suites are using Test Kitchen. But you are not tied to it. You can use any setup you'd like.
+You will notice that in this example, acceptance suites are using Test Kitchen.
+But you are not tied to it. You can use any setup you'd like.
 
 ## Change Log
-The [change log](CHANGELOG.md) for this project follows the principles outlined from http://keepachangelog.com/.
+
+The [change log](CHANGELOG.md) for this project follows the principles outlined
+from [Keep a CHANGELOG](http://keepachangelog.com/).
 
 ## Releasing chef-acceptance
+
+This project uses the [gem-release](https://github.com/svenfuchs/gem-release)
+plugin to manage the release process.  Once ready to release `chef-acceptance` from `master` perform the following steps.
+
+1. Verify the "Unreleased" section of the change log is up to date.  The changes will determine the next SemVer release version.
+1. Update the change log to reflect the version and date
+1. Add the version tag compare link to the footer of the change log even though the tag has not yet been pushed. Follow the pattern.
+1. Review and commit changes with comment "vX.Y.Z change log".
+1. Bump version, release to RubyGems and tag version
+```
+gem bump --version X.Y.Z --tag --release
+```
