@@ -126,7 +126,7 @@ plugin to manage the release process.  Once ready to release `chef-acceptance` f
 1. Verify the "Unreleased" section of the change log is up to date.  The changes will determine the next SemVer release version.
 1. Update the change log to reflect the version and date
 1. Add the version tag compare link to the footer of the change log even though the tag has not yet been pushed. Follow the pattern.
-1. Review and commit changes with comment "vX.Y.Z change log".
+1. Review and commit changes with comment "vX.Y.Z change log". Push change.
 1. Bump version, release to RubyGems and tag version
 ```
 gem bump --version X.Y.Z --tag --release
