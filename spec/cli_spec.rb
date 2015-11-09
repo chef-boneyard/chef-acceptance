@@ -166,10 +166,4 @@ context 'ChefAcceptance::Cli' do
       end
     end
   end
-
-  context '#executable_installed?' do
-    it 'fails when not found' do
-      expect(cli.executable_installed?('betterlucknexttime')).to be false
-    end
-  end
 end

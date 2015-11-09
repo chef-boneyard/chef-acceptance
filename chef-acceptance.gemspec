@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'thor', '~> 0.19'
-  s.add_dependency 'mixlib-shellout', '~> 2.2'
 
   s.add_development_dependency 'rubocop', '~> 0.34'
   s.add_development_dependency 'rake', '~> 10.4'
