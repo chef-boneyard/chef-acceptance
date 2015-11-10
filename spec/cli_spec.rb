@@ -94,57 +94,24 @@ context 'ChefAcceptance::Cli' do
 
   context 'test command' do
     let(:command) { :test }
-    let(:options) { { destroy: 'passing' } } # TODO: figure out how to send default options
 
     context 'test-suite suite' do
       let(:test_suite) { 'test-suite' }
 
       context 'with default destroy option' do
         it 'calls provision, verify, destroy' do
-          cli.options = options
           %w(provision verify destroy).each do |cmd|
             expect(capture(:stdout) { cli.send(command, test_suite) }).to match(/the #{cmd} recipe/)
           end
         end
+      end
 
-        context 'with passing destroy option' do
-          let(:options) { { destroy: 'passing' } }
+      context 'with skip destroy option' do
+        let(:options) { { skip_destroy: true } }
 
-          it 'calls provision, verify, destroy' do
-            cli.options = options
-            %w(provision verify destroy).each do |cmd|
-              expect(capture(:stdout) { cli.send(command, test_suite) }).to match(/the #{cmd} recipe/)
-            end
-          end
-        end
-
-        context 'with always destroy option' do
-          let(:options) { { destroy: 'always' } }
-
-          it 'calls provision, verify, destroy' do
-            cli.options = options
-            %w(provision verify destroy).each do |cmd|
-              expect(capture(:stdout) { cli.send(command, test_suite) }).to match(/the #{cmd} recipe/)
-            end
-          end
-        end
-
-        context 'with never destroy option' do
-          let(:options) { { destroy: 'never' } }
-
-          it 'does not call destroy' do
-            cli.options = options
-            expect(capture(:stdout) { cli.send(command, test_suite) }).not_to match(/the destroy recipe/)
-          end
-        end
-
-        context 'with invalid destroy option' do
-          let(:options) { { destroy: 'foo' } }
-
-          it 'aborts' do
-            cli.options = options
-            expect { cli.send(command, test_suite) }.to raise_error(/destroy option must be one of/)
-          end
+        it 'does not call destroy' do
+          cli.options = options
+          expect(capture(:stdout) { cli.send(command, test_suite) }).not_to match(/the destroy recipe/)
         end
       end
     end

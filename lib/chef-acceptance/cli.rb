@@ -5,8 +5,6 @@ require 'chef-acceptance/executable_helper'
 
 module ChefAcceptance
   class Cli < Thor
-    DESTROY_OPTIONS = %w(always never passing).freeze
-
     package_name 'chef-acceptance'
 
     #
@@ -27,22 +25,16 @@ module ChefAcceptance
     end
 
     desc 'test TEST_SUITE [OPTIONS]', 'Run provision, verify and destroy'
-    option :destroy,
-           banner: 'STRATEGY',
-           aliases: '-d',
-           default: 'passing',
-           desc: "Destroy strategy to use after testing (#{DESTROY_OPTIONS.join(', ')})"
+    option :skip_destroy,
+           type: :boolean,
+           desc: 'Skip destroy phase after any run'
     def test(test_suite_name)
-      unless DESTROY_OPTIONS.include? options[:destroy]
-        abort "destroy option must be one of: #{DESTROY_OPTIONS.join(', ')}"
-      end
-
-      test_suite = TestSuite.new(test_suite_name)
-
       recipe_list = %w(provision verify)
       recipe_list << 'destroy' if destroy?
 
+      test_suite = TestSuite.new(test_suite_name)
       test_suite.run_recipes = recipe_list
+
       begin
         test_suite.run
       rescue => e
@@ -86,7 +78,7 @@ module ChefAcceptance
 
     no_commands do
       def destroy?
-        options[:destroy] != 'never'
+        !options[:skip_destroy]
       end
     end
   end

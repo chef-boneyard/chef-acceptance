@@ -8,7 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Changed
 - Refactored TestSuite Struct to a class
-- Test command aggregates recipes into a single run list
+- `test` command aggregates recipes into a single run list
+- `test` command `--destroy` option changed to a boolean as `--skip-destroy`
 
 ### Removed
 - Removed mixlib-shellout dependency from gem
