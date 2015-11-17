@@ -14,11 +14,10 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'thor', '~> 0.19'
-  s.add_dependency 'mixlib-shellout', '~> 2.2'
 
-  s.add_development_dependency 'rubocop', '~> 0.34'
-  s.add_development_dependency 'rake', '~> 10.4'
-  s.add_development_dependency 'rspec', '~> 3.3'
-  s.add_development_dependency 'chef', '~> 12.5'
-  s.add_development_dependency 'gem-release', '~> 0.7'
+  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'chef'
+  s.add_development_dependency 'gem-release'
 end
