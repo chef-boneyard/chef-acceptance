@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.2.0] - 2015-11-17
 ### Changed
 - Refactored TestSuite Struct to a class
 - `test` command aggregates recipes into a single run list
@@ -22,5 +24,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - utility commands
 - Travis CI support
 
-[Unreleased]: https://github.com/chef/chef-acceptance/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/chef/chef-acceptance/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/chef/chef-acceptance/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/chef/chef-acceptance/compare/3b46b84532f734f07b2cca5e4c57d34ec535f0d7...v0.1.0
