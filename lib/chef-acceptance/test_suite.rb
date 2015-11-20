@@ -61,13 +61,15 @@ EOS
         shellout << "-o #{run_list.join(',')}"
       end
 
-      chef_zero = Mixlib::ShellOut.new(shellout.join(' '),
-                                      cwd: acceptance_cookbook_dir,
-                                      live_stream: $stdout)
+      Bundler.with_clean_env do
+        chef_zero = Mixlib::ShellOut.new(shellout.join(' '),
+                                        cwd: acceptance_cookbook_dir,
+                                        live_stream: $stdout)
 
-      chef_zero.run_command
+        chef_zero.run_command
 
-      fail "#{chef_zero.stdout}\n#{chef_zero.stderr}" if chef_zero.error?
+        fail "#{chef_zero.stdout}\n#{chef_zero.stderr}" if chef_zero.error?
+      end
     end
 
     def generate
