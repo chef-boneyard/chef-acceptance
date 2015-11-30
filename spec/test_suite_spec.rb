@@ -5,22 +5,6 @@ context 'ChefAcceptance::TestSuite' do
   let(:name) { 'supercalifragilisticexpialidocious' }
   let(:test_suite) { ChefAcceptance::TestSuite.new(name) }
 
-  it 'returns acceptance_cookbook_dir' do
-    expect(test_suite.acceptance_cookbook_dir).to eq "#{name}/.acceptance/acceptance-cookbook"
-  end
-
-  it 'returns recipes_dir' do
-    expect(test_suite.recipes_dir).to eq "#{name}/.acceptance/acceptance-cookbook/recipes"
-  end
-
-  it 'returns chef_dir' do
-    expect(test_suite.chef_dir).to eq "#{name}/.acceptance/acceptance-cookbook/.chef"
-  end
-
-  it 'returns chef_config_file' do
-    expect(test_suite.chef_config_file).to eq "#{name}/.acceptance/acceptance-cookbook/.chef/config.rb"
-  end
-
   it 'does not exist' do
     Dir.mktmpdir do |dir|
       Dir.chdir(dir)
