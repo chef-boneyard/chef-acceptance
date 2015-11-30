@@ -15,9 +15,9 @@ module ChefAcceptance
 
     ACCEPTANCE_COOKBOOK_NAME = 'acceptance-cookbook'.freeze
 
-    def initialize(name)
+    def initialize(name, options = {})
       @name = name
-      @run_recipes = []
+      @run_recipes = options.fetch(:run_recipes, [])
       @acceptance_cookbook_dir = File.join(name, '.acceptance', ACCEPTANCE_COOKBOOK_NAME)
     end
 

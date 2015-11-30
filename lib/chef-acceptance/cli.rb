@@ -13,14 +13,9 @@ module ChefAcceptance
     TestSuite::CORE_ACCEPTANCE_RECIPES.each do |recipe|
       desc "#{recipe} TEST_SUITE", "Run #{recipe}"
       define_method(recipe) do |test_suite_name|
-        test_suite = TestSuite.new(test_suite_name)
-        test_suite.run_recipes = [recipe]
+        test_suite = TestSuite.new(test_suite_name, run_recipes: [recipe])
 
-        begin
-          test_suite.run
-        rescue => e
-          abort e.message
-        end
+        test_suite.run
       end
     end
 
@@ -32,20 +27,15 @@ module ChefAcceptance
       recipe_list = %w(provision verify)
       recipe_list << 'destroy' if destroy?
 
-      test_suite = TestSuite.new(test_suite_name)
-      test_suite.run_recipes = recipe_list
+      test_suite = TestSuite.new(test_suite_name, run_recipes: recipe_list)
 
       begin
         test_suite.run
-      rescue => e
-        puts e.message
-
+      ensure
         if destroy?
           test_suite.run_recipes = ['destroy']
           test_suite.run
         end
-
-        abort
       end
     end
 
@@ -55,11 +45,7 @@ module ChefAcceptance
 
       abort "Test suite '#{test_suite_name}' already exists." if test_suite.exist?
 
-      begin
-        test_suite.generate
-      rescue => e
-        abort e.message
-      end
+      test_suite.generate
 
       puts "Run `chef-acceptance test #{test_suite_name}`"
     end
