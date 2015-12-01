@@ -1,6 +1,8 @@
 require 'thor'
 require 'chef-acceptance/version'
+require 'chef-acceptance/chef_runner'
 require 'chef-acceptance/test_suite'
+require 'chef-acceptance/acceptance_cookbook'
 require 'chef-acceptance/executable_helper'
 
 module ChefAcceptance
@@ -10,12 +12,11 @@ module ChefAcceptance
     #
     # Create core acceptance commands
     #
-    TestSuite::CORE_ACCEPTANCE_RECIPES.each do |recipe|
+    AcceptanceCookbook::CORE_ACCEPTANCE_RECIPES.each do |recipe|
       desc "#{recipe} TEST_SUITE", "Run #{recipe}"
       define_method(recipe) do |test_suite_name|
-        test_suite = TestSuite.new(test_suite_name, run_recipes: [recipe])
-
-        test_suite.run
+        test_suite = TestSuite.new(test_suite_name)
+        ChefRunner.new(test_suite, run_recipes: [recipe]).run
       end
     end
 
@@ -27,14 +28,15 @@ module ChefAcceptance
       recipe_list = %w(provision verify)
       recipe_list << 'destroy' if destroy?
 
-      test_suite = TestSuite.new(test_suite_name, run_recipes: recipe_list)
+      test_suite = TestSuite.new(test_suite_name)
+      runner = ChefRunner.new(test_suite, run_recipes: recipe_list)
 
       begin
-        test_suite.run
-      ensure
+        runner.run
+      rescue
         if destroy?
-          test_suite.run_recipes = ['destroy']
-          test_suite.run
+          runner.run_recipes = ['destroy']
+          runner.run
         end
       end
     end
@@ -45,7 +47,7 @@ module ChefAcceptance
 
       abort "Test suite '#{test_suite_name}' already exists." if test_suite.exist?
 
-      test_suite.generate
+      AcceptanceCookbook.new(File.join(test_suite_name, '.acceptance')).generate
 
       puts "Run `chef-acceptance test #{test_suite_name}`"
     end

@@ -9,6 +9,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `suite_dir` node attribute available in acceptance cookbook recipes
 
+### Changed
+- `config.rb` is generated automatically
+
 ## [0.2.0] - 2015-11-17
 ### Changed
 - Refactored TestSuite Struct to a class
