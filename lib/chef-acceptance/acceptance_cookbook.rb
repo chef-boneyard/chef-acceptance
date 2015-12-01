@@ -43,7 +43,7 @@ module ChefAcceptance
 
     def recipe_file_template(recipe_name)
       <<-EOS
-log "Running '#{recipe_name}' recipe from the acceptance-cookbook in directory '#\{node['suite_dir']\}'"
+log "Running '#{recipe_name}' recipe from the acceptance-cookbook in directory '#\{node['chef-acceptance']['suite-dir']\}'"
       EOS
     end
 

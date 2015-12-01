@@ -38,22 +38,12 @@ EOS
     end
 
     def create_required_files
-      dna = {
-        suite_dir: File.expand_path(test_suite.name)
-      }
-
       FileUtils.rmtree temp_dir
       FileUtils.mkpath temp_dir
       File.write(dna_json_file, JSON.pretty_generate(dna))
 
       FileUtils.mkpath chef_dir
-
-      chef_config = <<-EOS
-cookbook_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, '..'))}'
-node_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, 'nodes'))}'
-      EOS
-
-      File.write(chef_config_file, chef_config)
+      File.write(chef_config_file, chef_config_template)
     end
 
     def execute_run_command
@@ -89,6 +79,21 @@ node_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, 'nodes'))}
     end
 
     private
+
+    def dna
+      {
+        'chef-acceptance' => {
+          'suite-dir' => File.expand_path(test_suite.name)
+        }
+      }
+    end
+
+    def chef_config_template
+      <<-EOS
+  cookbook_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, '..'))}'
+  node_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, 'nodes'))}'
+      EOS
+    end
 
     def temp_dir
       File.join(acceptance_cookbook.root_dir, 'tmp')

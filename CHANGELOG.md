@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- `suite_dir` node attribute available in acceptance cookbook recipes
+- `node['chef-acceptance']['suite-dir']` attribute available in acceptance cookbook recipes
 
 ### Changed
 - `config.rb` is generated automatically

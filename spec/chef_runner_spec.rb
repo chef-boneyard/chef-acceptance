@@ -11,10 +11,6 @@ context 'ChefAcceptance::ChefRunner' do
       runner = ChefAcceptance::ChefRunner.new(test_suite, run_recipes: ['provision'])
 
       expect(capture(:stdout) { runner.run }).to match(/Running 'provision' recipe from the acceptance-cookbook in directory '.*foo'/)
-
-      Dir.chdir File.join('foo', '.acceptance', 'acceptance-cookbook')
-      expect(File.exist?(File.join('tmp', '.chef', 'config.rb'))).to be true
-      expect(File.exist?(File.join('tmp', 'dna.json'))).to be true
     end
   end
 end
