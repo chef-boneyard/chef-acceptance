@@ -90,8 +90,8 @@ EOS
 
     def chef_config_template
       <<-EOS
-  cookbook_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, '..'))}'
-  node_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, 'nodes'))}'
+cookbook_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, '..'))}'
+node_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, 'nodes'))}'
       EOS
     end
 
