@@ -9,6 +9,7 @@ context 'ChefAcceptance::Cli' do
   let(:error) { nil }
 
   before(:all) do
+    ensure_project_root
     Dir.chdir('test/fixtures/cookbooks/acceptance')
   end
 

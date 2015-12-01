@@ -24,3 +24,7 @@ def capture(stream)
 
   result
 end
+
+def ensure_project_root
+  Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+end
