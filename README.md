@@ -21,18 +21,15 @@ chef-acceptance generate my-test-suite
 Output
 ```
 acceptance
-├── my-test-suite
-│   ├── .acceptance
-│   │   └── acceptance-cookbook
-|   |       ├──.chef
-|   |       │   └── config.rb
-│   │       ├── metadata.rb
-│   │       └── recipes
-│   │           ├── destroy.rb
-│   │           ├── provision.rb
-│   │           └── verify.rb
-│   └── .gitignore
-
+└── my-test-suite
+    └── .acceptance
+         └── acceptance-cookbook
+            ├── .gitignore
+            ├── metadata.rb
+            └── recipes
+                ├── destroy.rb
+                ├── provision.rb
+                └── verify.rb
 ```
 
 Now you can run your acceptance test phases
