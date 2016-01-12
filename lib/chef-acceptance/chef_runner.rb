@@ -62,6 +62,7 @@ EOS
       shellout = []
       shellout << 'chef-client -z'
       shellout << "-c #{File.expand_path(chef_config_file)}"
+      shellout << '--force-formatter'
 
       if File.exist? dna_json_file
         shellout << "-j #{File.expand_path(dna_json_file)}"
@@ -92,6 +93,7 @@ EOS
       <<-EOS
 cookbook_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, '..'))}'
 node_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, 'nodes'))}'
+stream_execute_output true
       EOS
     end
 
