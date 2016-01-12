@@ -4,6 +4,12 @@
 
 `chef-acceptance` makes it easy to develop acceptance tests for a project. You can run any type of suites for your project (test-kitchen, pedant, chef provisioning, rspec, etc...) but it enforces a structure so that you can run all of your different acceptance tests in the same way. It also gives you a CLI interface so that you can build your tests without breaking your pipeline until they are ready.
 
+There are a few reasons we wrote a new tool to do this.  
+
+1. `chef-acceptance` is meant to test complete packages rather than the source code.  
+2. It gives a tool that can be run locally the same way as it will be ran in CI.  This allows developers to test their acceptance test without bogging down the CI pipeline.  
+3. It allows developers to choose what testing framework they want to use for acceptance testing.  `chef-acceptance` can be used to run Test Kitchen tests or run Chef Provisioning and Inspec.
+
 ## Setup
 
 Create an `acceptance` directory to your project
