@@ -8,9 +8,9 @@ context 'ChefAcceptance::ChefRunner' do
       ChefAcceptance::AcceptanceCookbook.new(File.join(dir, 'foo', '.acceptance')).generate
       Dir.chdir dir
       test_suite = ChefAcceptance::TestSuite.new('foo')
-      runner = ChefAcceptance::ChefRunner.new(test_suite, run_recipes: ['provision'])
+      runner = ChefAcceptance::ChefRunner.new(test_suite)
 
-      expect(capture(:stdout) { runner.run }).to match(/Running 'provision' recipe from the acceptance-cookbook in directory '.*foo'/)
+      expect(capture(:stdout) { runner.run!('provision') }).to match(/Running 'provision' recipe from the acceptance-cookbook in directory '.*foo'/)
     end
   end
 end

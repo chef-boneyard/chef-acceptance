@@ -107,12 +107,12 @@ context 'ChefAcceptance::Cli' do
         end
       end
 
-      context 'with skip destroy option' do
-        let(:options) { { skip_destroy: true } }
+      context 'with force destroy option' do
+        let(:options) { { force_destroy: true } }
 
-        it 'does not call destroy' do
+        it 'calls destroy' do
           cli.options = options
-          expect(capture(:stdout) { cli.send(command, test_suite) }).not_to match(/the destroy recipe/)
+          expect(capture(:stdout) { cli.send(command, test_suite) }).to match(/the destroy recipe/)
         end
       end
     end
