@@ -1,6 +1,6 @@
 module ChefAcceptance
   class AcceptanceCookbook
-    CORE_ACCEPTANCE_RECIPES = %w(destroy provision verify).freeze
+    CORE_ACCEPTANCE_RECIPES = %w(provision verify destroy).freeze
 
     ACCEPTANCE_COOKBOOK_NAME = 'acceptance-cookbook'.freeze
 

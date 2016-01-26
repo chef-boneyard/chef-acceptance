@@ -99,23 +99,43 @@ context 'ChefAcceptance::Cli' do
     context 'test-suite suite' do
       let(:test_suite) { 'test-suite' }
 
+      it 'calls provision, verify, destroy' do
+        %w(provision verify destroy).each do |cmd|
+          expect(capture(:stdout) { cli.send(command, test_suite) }).to match(/the #{cmd} recipe/)
+        end
+      end
+    end
+
+    context 'force-destroy suite' do
+      let(:test_suite) { 'force-destroy-suite' }
+
       context 'with default destroy option' do
-        it 'calls provision, verify, destroy' do
-          %w(provision verify destroy).each do |cmd|
-            expect(capture(:stdout) { cli.send(command, test_suite) }).to match(/the #{cmd} recipe/)
+        it 'calls provision which fails' do
+          stdout = capture(:stdout) do
+            expect { cli.send(command, test_suite) }.to raise_error
           end
+          expect(stdout).to match(/No such file or directory - nocommand/)
+          expect(stdout).to match(/Encountered an error running the recipe/)
+          expect(stdout).to_not match(/--force-destroy specified so attempting to run the destroy recipe/)
+          expect(stdout).to_not match(/the destroy recipe/)
         end
       end
 
       context 'with force destroy option' do
         let(:options) { { force_destroy: true } }
-
-        it 'calls destroy' do
+        it 'calls provision then calls destroy' do
           cli.options = options
-          expect(capture(:stdout) { cli.send(command, test_suite) }).to match(/the destroy recipe/)
+          stdout = capture(:stdout) do
+            expect { cli.send(command, test_suite) }.to raise_error
+          end
+          expect(stdout).to match(/No such file or directory - nocommand/)
+          expect(stdout).to match(/Encountered an error running the recipe/)
+          expect(stdout).to match(/--force-destroy specified so attempting to run the destroy recipe/)
+          expect(stdout).to match(/the destroy recipe/)
         end
       end
     end
+
   end
 
   context 'generate command' do

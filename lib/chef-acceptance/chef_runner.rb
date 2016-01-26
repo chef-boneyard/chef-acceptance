@@ -3,42 +3,35 @@ require 'mixlib/shellout'
 require 'json'
 require 'bundler'
 require 'chef-acceptance/acceptance_cookbook'
-require 'chef-acceptance/shellout_builder'
 
 module ChefAcceptance
+
+  # Responsible for generating a CCR shellout and running it
   class ChefRunner
     attr_reader :acceptance_cookbook
     attr_reader :test_suite
-    attr_reader :shellout_builder
+    attr_reader :recipe
 
-    def initialize(test_suite)
+    def initialize(test_suite, recipe)
       @test_suite = test_suite
       @acceptance_cookbook = test_suite.acceptance_cookbook
-      @shellout_builder = ShelloutBuilder.new(cwd: acceptance_cookbook.root_dir)
+      @recipe = recipe
     end
 
-    def run!(recipe)
-      unless test_suite.exist?
-        fail <<-EOS.gsub(/^\s+/, "")
-          Could not find test suite '#{test_suite.name}' in the current working directory '#{Dir.pwd}'.
-        EOS
-      end
-
-      unless ExecutableHelper.executable_installed? 'chef-client'
-        fail "Could not find chef-client in #{ENV['PATH']}"
-      end
-
+    def run!
       # prep and create chef attribute and config file
       prepare_required_files
 
-      shellout_builder.with_chef_config_file(chef_config_file)
-      shellout_builder.with_dna_json_file(dna_json_file)
-      shellout_builder.with_recipe("#{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}")
-      chef_shellout = shellout_builder.build
+      chef_shellout = build_shellout(
+        cwd: acceptance_cookbook.root_dir,
+        chef_config_file: chef_config_file,
+        dna_json_file: dna_json_file,
+        recipe: "#{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}"
+      )
 
       Bundler.with_clean_env do
         chef_shellout.run_command
-        chef_shellout.error!
+        chef_shellout.error! # This will only raise an error if there was one
       end
     end
 
@@ -69,6 +62,22 @@ module ChefAcceptance
       File.write(chef_config_file, chef_config_template)
     end
 
+    def build_shellout(options = {})
+      cwd = options.fetch(:cwd, Dir.pwd)
+      recipe = options.fetch(:recipe)
+      chef_config_file = options.fetch(:chef_config_file)
+      dna_json_file = options.fetch(:dna_json_file)
+
+      shellout = []
+      shellout << 'chef-client -z'
+      shellout << "-c #{chef_config_file}"
+      shellout << '--force-formatter'
+      shellout << "-j #{dna_json_file}"
+      shellout << "-o #{recipe}"
+
+      Mixlib::ShellOut.new(shellout.join(' '), cwd: cwd, live_stream: $stdout)
+    end
+
     def temp_dir
       File.join(acceptance_cookbook.root_dir, 'tmp')
     end
@@ -78,11 +87,11 @@ module ChefAcceptance
     end
 
     def chef_config_file
-      File.join(chef_dir, 'config.rb')
+      File.expand_path(File.join(chef_dir, 'config.rb'))
     end
 
     def dna_json_file
-      File.join(temp_dir, 'dna.json')
+      File.expand_path(File.join(temp_dir, 'dna.json'))
     end
   end
 end
