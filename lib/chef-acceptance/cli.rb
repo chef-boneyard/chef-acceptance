@@ -16,28 +16,23 @@ module ChefAcceptance
       desc "#{recipe} TEST_SUITE", "Run #{recipe}"
       define_method(recipe) do |test_suite_name|
         test_suite = TestSuite.new(test_suite_name)
-        ChefRunner.new(test_suite, run_recipes: [recipe]).run
+        runner = ChefRunner.new(test_suite)
+        runner.run!(recipe)
       end
     end
 
     desc 'test TEST_SUITE [OPTIONS]', 'Run provision, verify and destroy'
-    option :skip_destroy,
+    option :force_destroy,
            type: :boolean,
-           desc: 'Skip destroy phase after any run'
+           desc: 'Force destroy phase after any run'
     def test(test_suite_name)
-      recipe_list = %w(provision verify)
-      recipe_list << 'destroy' if destroy?
-
-      test_suite = TestSuite.new(test_suite_name)
-      runner = ChefRunner.new(test_suite, run_recipes: recipe_list)
-
       begin
-        runner.run
+        provision(test_suite_name)
+        verify(test_suite_name)
+        destroy(test_suite_name)
       rescue
-        if destroy?
-          runner.run_recipes = ['destroy']
-          runner.run
-        end
+        destroy(test_suite_name) if destroy?
+        raise
       end
     end
 
@@ -66,7 +61,7 @@ module ChefAcceptance
 
     no_commands do
       def destroy?
-        !options[:skip_destroy]
+        options[:force_destroy]
       end
     end
   end

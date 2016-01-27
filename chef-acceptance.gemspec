@@ -15,9 +15,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'thor', '~> 0.19'
 
-  s.add_development_dependency 'rubocop'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'chef'
   s.add_development_dependency 'gem-release'
+  s.add_development_dependency 'chefstyle'
 end

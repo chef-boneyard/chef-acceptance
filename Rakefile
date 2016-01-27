@@ -10,10 +10,15 @@ RSpec::Core::RakeTask.new(:spec) do |task|
   task.pattern = 'spec/**/*_spec.rb'
 end
 
-desc 'Run rubocop'
-RuboCop::RakeTask.new do |task|
-  task.options << '--display-cop-names'
+begin
+  require "chefstyle"
+  require "rubocop/rake_task"
+  RuboCop::RakeTask.new(:style) do |task|
+    task.options += ["--display-cop-names", "--no-color"]
+  end
+rescue LoadError
+  puts "chefstyle/rubocop is not available.  gem install chefstyle to do style checking."
 end
 
 desc 'Run all tests'
-task test: [:rubocop, :spec]
+task test: [:style, :spec]
