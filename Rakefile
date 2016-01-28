@@ -5,9 +5,14 @@ require 'rubocop/rake_task'
 
 task default: :test
 
-desc 'run specs'
-RSpec::Core::RakeTask.new(:spec) do |task|
-  task.pattern = 'spec/**/*_spec.rb'
+desc 'run unit tests'
+RSpec::Core::RakeTask.new(:unit) do |task|
+  task.pattern = 'spec/chef-acceptance/*_spec.rb'
+end
+
+desc 'run integration tests'
+RSpec::Core::RakeTask.new(:integration) do |task|
+  task.pattern = 'spec/integration/*_spec.rb'
 end
 
 begin
@@ -21,4 +26,4 @@ rescue LoadError
 end
 
 desc 'Run all tests'
-task test: [:style, :spec]
+task test: [:style, :unit, :integration]
