@@ -20,7 +20,7 @@ module ChefAcceptance
       end
     end
 
-    desc 'test TEST_SUITE [OPTIONS]', 'Run provision, verify and destroy'
+    desc 'test TEST_SUITE [--force-destroy]', 'Run provision, verify and destroy'
     option :force_destroy,
            type: :boolean,
            desc: 'Force destroy phase after any run'

@@ -41,9 +41,11 @@ describe ChefAcceptance::ChefRunner do
         ].join(" "), cwd: root_dir, live_stream: $stdout
       ).and_return(ccr_shellout)
       expect(ccr_shellout).to receive(:run_command)
+      expect(ccr_shellout).to receive(:execution_time).and_return(1)
       expect(ccr_shellout).to receive(:error!)
 
       expect { ccr.run! }.to_not raise_error
+      expect(ccr.duration).to eq(1)
     end
   end
 

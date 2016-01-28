@@ -1,1 +1,1 @@
-execute 'nocommand'
+log 'provision phase'

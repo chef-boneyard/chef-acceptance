@@ -11,11 +11,13 @@ module ChefAcceptance
     attr_reader :acceptance_cookbook
     attr_reader :test_suite
     attr_reader :recipe
+    attr_reader :duration
 
     def initialize(test_suite, recipe)
       @test_suite = test_suite
       @acceptance_cookbook = test_suite.acceptance_cookbook
       @recipe = recipe
+      @duration = 0
     end
 
     def run!
@@ -31,6 +33,9 @@ module ChefAcceptance
 
       Bundler.with_clean_env do
         chef_shellout.run_command
+        # execution_time can return nil and we always want to return a number
+        # for duration().
+        @duration = chef_shellout.execution_time || 0
         chef_shellout.error! # This will only raise an error if there was one
       end
     end
