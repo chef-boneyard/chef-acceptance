@@ -47,7 +47,7 @@ describe ChefAcceptance::OutputFormatter do
         ["suite1", "destroy", 10000, false],
         ["suite2", "provision", 100000, false],
         ["suite2", "verify", 1000000, false],
-        ["suite2", "destroy", 10000000000, false]
+        ["suite2", "destroy", 10000000000, false],
       ]
     }
 

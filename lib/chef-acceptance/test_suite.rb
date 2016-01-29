@@ -1,4 +1,4 @@
-require 'chef-acceptance/acceptance_cookbook'
+require "chef-acceptance/acceptance_cookbook"
 
 module ChefAcceptance
   class TestSuite
@@ -9,7 +9,7 @@ module ChefAcceptance
     def initialize(name, options = {})
       @name = name
       @acceptance_cookbook = options.fetch(:acceptance_cookbook,
-        AcceptanceCookbook.new(File.join(Dir.pwd, name, '.acceptance')))
+        AcceptanceCookbook.new(File.join(Dir.pwd, name, ".acceptance")))
     end
 
     def exist?

@@ -1,7 +1,7 @@
-require 'spec_helper'
-require 'chef-acceptance/cli'
+require "spec_helper"
+require "chef-acceptance/cli"
 
-context 'ChefAcceptance::Cli' do
+context "ChefAcceptance::Cli" do
   before(:all) do
     Dir.chdir(ACCEPTANCE_TEST_DIRECTORY)
   end
@@ -73,7 +73,7 @@ context 'ChefAcceptance::Cli' do
   end
 
 
-  context 'for a failing verify phase in the suite' do
+  context "for a failing verify phase in the suite" do
     context "with verify command" do
       let(:options) { %w{verify error-suite} }
       let(:failure_expected) { true }

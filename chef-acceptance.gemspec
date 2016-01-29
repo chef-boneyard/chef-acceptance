@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email         = 'patrick@chef.io'
   s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec)/}) }
   s.require_paths = ['lib']
-  s.bindir        = "bin"
+  s.bindir        = 'bin'
   s.executables   = %w{ chef-acceptance }
 
   s.add_dependency 'thor', '~> 0.19'
