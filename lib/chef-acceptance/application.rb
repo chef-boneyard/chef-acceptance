@@ -43,10 +43,9 @@ module ChefAcceptance
           puts "chef-acceptance run #{error ? "failed" : "succeeded"}."
           puts output_formatter.generate_output
         end
-      end
 
-      # Make sure that exit code reflects the error if we have any
-      exit(1) if error
+        raise if error
+      end
     end
 
     def run_suite(suite, command)

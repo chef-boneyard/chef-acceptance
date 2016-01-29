@@ -132,7 +132,7 @@ describe ChefAcceptance::Application do
       it "does not call the output formatter" do
         expect(app).to receive(:run_suite).with(suite, command).and_raise(ChefAcceptance::AcceptanceError)
         stdout = capture(:stdout) do
-          expect { app.run(suite, command) }.to raise_error(SystemExit)
+          expect { app.run(suite, command) }.to raise_error(RuntimeError)
         end
         expect(stdout).to match(/ChefAcceptance::AcceptanceError/)
       end
@@ -144,7 +144,7 @@ describe ChefAcceptance::Application do
         expect(formatter).to receive(:add_row).with(suite: "", command: "Total", duration: be_a(Numeric), error: true)
         expect(formatter).to receive(:generate_output)
         stdout = capture(:stdout) do
-          expect { app.run(suite, command) }.to raise_error(SystemExit)
+          expect { app.run(suite, command) }.to raise_error(RuntimeError)
         end
         expect(stdout).to match(/chef-acceptance run failed/)
       end
