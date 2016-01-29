@@ -1,21 +1,24 @@
 require 'spec_helper'
-require 'chef-acceptance/acceptance_cookbook'
+require 'chef-acceptance/cli'
 
-context 'ChefAcceptance::AcceptanceCookbook' do
-  let(:acceptance_cookbook) { ChefAcceptance::AcceptanceCookbook }
+context 'generate command' do
+  let(:options)  { [ "generate", "trivial" ] }
 
   it 'generates a cookbook' do
     Dir.mktmpdir do |dir|
-      acceptance_cookbook.new(dir).generate
+      Dir.chdir(dir) do
+        ChefAcceptance::Cli.start(options)
+        cookbook_directory = File.join(dir, "trivial/.acceptance/acceptance-cookbook")
 
-      %w(metadata.rb .gitignore).each do |file|
-        path = File.join(dir, 'acceptance-cookbook', file)
-        expect(File.exist?(path)).to be true
-      end
+        %w(metadata.rb .gitignore).each do |file|
+          path = File.join(cookbook_directory, file)
+          expect(File.exist?(path)).to be true
+        end
 
-      ChefAcceptance::AcceptanceCookbook::CORE_ACCEPTANCE_RECIPES.each do |recipe|
-        path = File.join(dir, 'acceptance-cookbook', 'recipes', "#{recipe}.rb")
-        expect(File.exist?(path)).to be true
+        ["provision", "verify", "destroy"].each do |recipe|
+          path = File.join(cookbook_directory, 'recipes', "#{recipe}.rb")
+          expect(File.exist?(path)).to be true
+        end
       end
     end
   end

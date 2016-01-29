@@ -9,11 +9,13 @@ Gem::Specification.new do |s|
   s.homepage      = 'http://github.com/chef/chef-acceptance'
   s.authors       = ['Patrick Wright']
   s.email         = 'patrick@chef.io'
-  s.executables   = %w(chef-acceptance)
   s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec)/}) }
   s.require_paths = ['lib']
+  s.bindir        = "bin"
+  s.executables   = %w{ chef-acceptance }
 
   s.add_dependency 'thor', '~> 0.19'
+  s.add_dependency "mixlib-shellout", "~> 2.0"
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'

@@ -1,1 +1,0 @@
-log 'the destroy recipe'

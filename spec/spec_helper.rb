@@ -25,6 +25,9 @@ def capture(stream)
   result
 end
 
+PROJECT_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+ACCEPTANCE_TEST_DIRECTORY = File.join(PROJECT_ROOT, "test/fixtures/cookbooks/acceptance")
+
 def ensure_project_root
-  Dir.chdir(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+  Dir.chdir(PROJECT_ROOT)
 end

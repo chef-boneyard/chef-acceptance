@@ -1,69 +1,87 @@
 module ChefAcceptance
   class OutputFormatter
-    # TODO merge these two classes into 1 class that stores suite/command info
-    # and has a puts method
+    attr_reader :rows
 
-    def add_row(suite, command, duration, error)
+    def initialize
+      # The headers are the first row in the table
+      @rows = []
+    end
+
+    def add_row(columns)
+      rows << [columns[:suite], columns[:command], columns[:duration], columns[:error]]
     end
 
     # Returns a String containing a multi-line table with the phases
-    def phase_to_duration_table()
-      # Duration comes in as milliseconds - lets change that to a more readable format
+    # | Suite  | Command   | Duration   | Error |
+    # | suite1 | provision | 00:00:00   | N     |
+    # | suite1 | verify    | 00:00:01   | Y     |
+    # | suite1 | destroy   | 00:00:10   | N     |
+    # | suite2 | provision | 00:01:40   | N     |
+    # | suite2 | verify    | 00:16:40   | N     |
+    # | suite2 | destroy   | 2777:46:40 | N     |
+    def generate_output
+      rows.each do |row|
+        # Change duration to a more readable format
+        row[2] = pretty_duration(row[2])
 
-      # | SUITE  | PHASE      | DURATION  | ERROR |
-      # | suite1 | provision  | 30s       | Y |
-      # | suite1 | destroy    | 1m        | N |
-      # | suite2 | provision  | 1m 2s     | N |
-      # | suite2 | verify     | 2m 10s    | N |
-      # | suite2 | destroy    | 60s       | N |
-      # | suite2 | total      | 4m 12s    | N |
+        # Error comes in as true or false - change to 'Y' or 'N'
+        row[3] = row[3] ? "Y" : "N"
+      end
 
-      # Suite           Status              Time Elapsed
-      # ------------------------------------------------
-      # gem_versions    success             7:15
-      # trivial         failure(provision)  6:15
-      # something_else  not_run             0:00
-      #                                     13:30
+      # The headers are the first row in the table
+      @rows = [["Suite", "Command", "Duration", "Error"]] + rows
+
+      # Compute the longest item in each column so we can make the column
+      # that wide
+      column_widths = [0, 0, 0, 0]
+      rows.each do |row|
+        row.each_with_index do |item, index|
+          column_widths[index] = item.length if item.length > column_widths[index]
+        end
+      end
+
+      # Add a space on either side of the longest item
+      column_widths.map! do |c|
+        c += 2
+      end
+
+      # Now output each item with the correct padding
+      rows.each_with_index do |row, row_index|
+        row.each_with_index do |item, column_index|
+          item = " #{item}"
+          rows[row_index][column_index] = item.ljust(column_widths[column_index])
+        end
+      end
+
+      output = ""
+      rows.each do |row|
+        output << "|#{row.join("|")}|\n"
+      end
+
+      output
     end
 
     private
 
-    # Takes in duration as a number of milliseconds and turns it into a
-    # pretty output like `1h 20m 30s`
+    # Takes in duration as a number of seconds and turns it into a
+    # pretty output like `1:23:59`
     def pretty_duration(duration)
+      secs = duration.to_i % 60
+      duration_in_mins = duration / 60
+      mins = duration_in_mins.to_i % 60
+      duration_in_hours = duration_in_mins / 60
+      hours = duration_in_hours.to_i
 
-    end
-  end
-
-  class SuiteStatistics
-    attr_reader :stats
-
-    def initialize
-      @stats = {}
-    end
-
-    def add_duration(suite, command, duration)
-      stats[suite] ||= {}
-      stats[suite][command] ||= {}
-      stats[suite][command][:duration] = duration
-    end
-
-    def add_error(suite, command, error)
-      stats[suite] ||= {}
-      stats[suite][command] ||= {}
-      stats[suite][command][:error] = error
-    end
-
-    # Return a 2D array where each row is an array containing suite name,
-    # command, duration and error (or nil)
-    def flatten
-      flat = []
-      stats.each do |suite_name, command_stats|
-        command_stats.each do |command_name, stats|
-          flat << [suite_name, command_name, stats[:duration], stats[:error]]
+      output = []
+      [hours, mins, secs].each do |t|
+        if t.to_s.length == 1
+          output << "0#{t}"
+        else
+          output << t.to_s
         end
       end
-      flat
+      output.join(":")
     end
+
   end
 end
