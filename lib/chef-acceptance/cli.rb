@@ -15,8 +15,7 @@ module ChefAcceptance
     AcceptanceCookbook::CORE_ACCEPTANCE_RECIPES.each do |command|
       desc "#{command} TEST_SUITE", "Run #{command}"
       define_method(command) do |test_suite|
-        app = Application.new()
-        app.run(test_suite, command)
+        run_app(test_suite, command)
       end
     end
 
@@ -25,8 +24,7 @@ module ChefAcceptance
            type: :boolean,
            desc: 'Force destroy phase after any run'
     def test(test_suite)
-      app = Application.new(options)
-      app.run(test_suite, "test")
+      run_app(test_suite, "test", options)
     end
 
     desc 'generate NAME', 'Generate acceptance scaffolding'
@@ -50,6 +48,22 @@ module ChefAcceptance
       puts "chef-acceptance version: #{ChefAcceptance::VERSION}"
       client = ExecutableHelper.executable_installed? 'chef-client'
       puts "chef-client path: #{client ? client : "not found in #{ENV['PATH']}"}"
+    end
+
+    no_commands do
+      def run_app(test_suite_name, command, options = nil)
+        app = if options
+                Application.new(options)
+              else
+                Application.new
+              end
+
+        begin
+          app.run(test_suite_name, command)
+        rescue
+          abort "Acceptance failed"
+        end
+      end
     end
   end
 end
