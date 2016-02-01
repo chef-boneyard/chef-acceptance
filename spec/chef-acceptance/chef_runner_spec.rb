@@ -1,7 +1,7 @@
-require 'spec_helper'
-require 'chef-acceptance/chef_runner'
-require 'chef-acceptance/test_suite'
-require 'chef-acceptance/acceptance_cookbook'
+require "spec_helper"
+require "chef-acceptance/chef_runner"
+require "chef-acceptance/test_suite"
+require "chef-acceptance/acceptance_cookbook"
 
 describe ChefAcceptance::ChefRunner do
   let(:acceptance_cookbook) { instance_double(ChefAcceptance::AcceptanceCookbook, root_dir: root_dir) }
@@ -37,7 +37,7 @@ describe ChefAcceptance::ChefRunner do
           "-c /tmp/tmp/.chef/config.rb",
           "--force-formatter",
           "-j /tmp/tmp/dna.json",
-          "-o acceptance-cookbook::provision"
+          "-o acceptance-cookbook::provision",
         ].join(" "), cwd: root_dir, live_stream: $stdout
       ).and_return(ccr_shellout)
       expect(ccr_shellout).to receive(:run_command)

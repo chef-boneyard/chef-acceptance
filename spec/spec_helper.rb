@@ -1,4 +1,4 @@
-$LOAD_PATH << File.join(File.dirname(__FILE__), '../lib')
+$LOAD_PATH << File.join(File.dirname(__FILE__), "../lib")
 
 RSpec.configure do |conf|
   conf.filter_run focus: true
@@ -13,19 +13,17 @@ end
 def capture(stream)
   begin
     stream = stream.to_s
-    # rubocop:disable Lint/Eval
     eval "$#{stream} = StringIO.new"
     yield
     result = eval("$#{stream}").string
   ensure
     eval("$#{stream} = #{stream.upcase}")
-    # rubocop:enable Lint/Eval
   end
 
   result
 end
 
-PROJECT_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+PROJECT_ROOT = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 ACCEPTANCE_TEST_DIRECTORY = File.join(PROJECT_ROOT, "test/fixtures/cookbooks/acceptance")
 
 def ensure_project_root

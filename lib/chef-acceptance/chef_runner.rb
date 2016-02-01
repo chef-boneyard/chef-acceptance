@@ -1,8 +1,8 @@
-require 'chef-acceptance/executable_helper'
-require 'mixlib/shellout'
-require 'json'
-require 'bundler'
-require 'chef-acceptance/acceptance_cookbook'
+require "chef-acceptance/executable_helper"
+require "mixlib/shellout"
+require "json"
+require "bundler"
+require "chef-acceptance/acceptance_cookbook"
 
 module ChefAcceptance
 
@@ -28,7 +28,7 @@ module ChefAcceptance
         cwd: acceptance_cookbook.root_dir,
         chef_config_file: chef_config_file,
         dna_json_file: dna_json_file,
-        recipe: "#{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}"
+        recipe: "#{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}",
       )
 
       Bundler.with_clean_env do
@@ -44,8 +44,8 @@ module ChefAcceptance
 
     def dna
       {
-        'chef-acceptance' => {
-          'suite-dir' => File.expand_path(test_suite.name)
+        "chef-acceptance" => {
+          "suite-dir" => File.expand_path(test_suite.name)
         }
       }
     end
@@ -74,29 +74,29 @@ module ChefAcceptance
       dna_json_file = options.fetch(:dna_json_file)
 
       shellout = []
-      shellout << 'chef-client -z'
+      shellout << "chef-client -z"
       shellout << "-c #{chef_config_file}"
-      shellout << '--force-formatter'
+      shellout << "--force-formatter"
       shellout << "-j #{dna_json_file}"
       shellout << "-o #{recipe}"
 
-      Mixlib::ShellOut.new(shellout.join(' '), cwd: cwd, live_stream: $stdout)
+      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: $stdout)
     end
 
     def temp_dir
-      File.join(acceptance_cookbook.root_dir, 'tmp')
+      File.join(acceptance_cookbook.root_dir, "tmp")
     end
 
     def chef_dir
-      File.join(temp_dir, '.chef')
+      File.join(temp_dir, ".chef")
     end
 
     def chef_config_file
-      File.expand_path(File.join(chef_dir, 'config.rb'))
+      File.expand_path(File.join(chef_dir, "config.rb"))
     end
 
     def dna_json_file
-      File.expand_path(File.join(temp_dir, 'dna.json'))
+      File.expand_path(File.join(temp_dir, "dna.json"))
     end
   end
 end

@@ -1,8 +1,8 @@
 module ChefAcceptance
   class AcceptanceCookbook
-    CORE_ACCEPTANCE_RECIPES = %w(provision verify destroy).freeze
+    CORE_ACCEPTANCE_RECIPES = %w{provision verify destroy}.freeze
 
-    ACCEPTANCE_COOKBOOK_NAME = 'acceptance-cookbook'.freeze
+    ACCEPTANCE_COOKBOOK_NAME = "acceptance-cookbook".freeze
 
     attr_reader :root_dir
 
@@ -30,15 +30,15 @@ module ChefAcceptance
     end
 
     def create_metadata_file
-      File.write(File.join(root_dir, 'metadata.rb'), metadata_file_template)
+      File.write(File.join(root_dir, "metadata.rb"), metadata_file_template)
     end
 
     def create_gitignore_file
-      File.write(File.join(root_dir, '.gitignore'), gitignore_file_template)
+      File.write(File.join(root_dir, ".gitignore"), gitignore_file_template)
     end
 
     def recipes_dir
-      File.join(root_dir, 'recipes')
+      File.join(root_dir, "recipes")
     end
 
     def recipe_file_template(recipe_name)

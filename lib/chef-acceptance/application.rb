@@ -27,7 +27,7 @@ module ChefAcceptance
       rescue AcceptanceError => e
         error = true
         run_summary = false
-        puts "#{e.to_s}\n#{e.backtrace.join("\n")}"
+        puts "#{e}\n#{e.backtrace.join("\n")}"
       rescue RuntimeError
         # We catch the errors here and do not raise again in
         # order to make a clean exit. Since the errors are already
@@ -58,12 +58,12 @@ module ChefAcceptance
         EOS
       end
 
-      unless ExecutableHelper.executable_installed? 'chef-client'
+      unless ExecutableHelper.executable_installed? "chef-client"
         raise AcceptanceError, "Could not find chef-client in #{ENV['PATH']}"
       end
 
       if command == "test"
-        %w(provision verify destroy).each do |recipe|
+        %w{provision verify destroy}.each do |recipe|
           begin
             run_command(test_suite, recipe)
           rescue RuntimeError => e
