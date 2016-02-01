@@ -1,6 +1,6 @@
 `chef-acceptance` helps develop and run acceptance tests from your laptop and from Chef Delivery.
 
-## Why
+## Why chef-acceptance?
 
 `chef-acceptance` makes it easy to develop acceptance tests for a project. You can run any type of suites for your project (test-kitchen, pedant, chef provisioning, rspec, etc...) but it enforces a structure so that you can run all of your different acceptance tests in the same way. It also gives you a CLI interface so that you can build your tests without breaking your pipeline until they are ready.
 
@@ -10,7 +10,7 @@ There are a few reasons we wrote a new tool to do this.
 2. It gives a tool that can be run locally the same way as it will be ran in CI.  This allows developers to test their acceptance test without bogging down the CI pipeline.  
 3. It allows developers to choose what testing framework they want to use for acceptance testing.  `chef-acceptance` can be used to run Test Kitchen tests or run Chef Provisioning and Inspec.
 
-## Setup
+## Initialize a project for acceptance
 
 Create an `acceptance` directory to your project
 ```
@@ -83,39 +83,6 @@ chef_acceptance 'spincycle' do
 end
 ```
 
-## Example project
-
-```
-acceptance
-├── lamont-ci
-│   ├── .acceptance
-│   │   └── acceptance-cookbook
-│   │       ├── metadata.rb
-│   │       └── recipes
-│   │           ├── destroy.rb
-│   │           ├── provision.rb
-│   │           └── verify.rb
-│   ├── .kitchen.yml
-│   ├── metadata.rb
-│   └── recipes
-│       └── default.rb
-└── spincycle
-    ├── .acceptance
-    │   └── acceptance-cookbook
-    │       ├── metadata.rb
-    │       └── recipes
-    │           ├── destroy.rb
-    │           ├── provision.rb
-    │           └── verify.rb
-    ├── .kitchen.yml
-    ├── metadata.rb
-    └── recipes
-        └── default.rb
-```
-
-You will notice that in this example, acceptance suites are using Test Kitchen.
-But you are not tied to it. You can use any setup you'd like.
-
 ## Change Log
 
 The [change log](CHANGELOG.md) for this project follows the principles outlined
@@ -130,7 +97,7 @@ plugin to manage the release process.  Once ready to release `chef-acceptance` f
 1. Update the change log to reflect the version and date
 1. Add the version tag compare link to the footer of the change log even though the tag has not yet been pushed. Follow the pattern.
 1. Review and commit changes with comment "vX.Y.Z change log". Push change.
-1. Bump version, release to RubyGems and tag version
+1. Bump version and tag version
 ```
-gem bump --version X.Y.Z --tag --release
+gem bump --version X.Y.Z --tag
 ```
