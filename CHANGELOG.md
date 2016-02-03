@@ -8,19 +8,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - `node['chef-acceptance']['suite-dir']` attribute available in acceptance cookbook recipes
+- Test results summary displayed at end of run
+
+### Fixed
+- `test` command returns non-zero exit code when an error is encountered
 
 ### Changed
 - `config.rb` is generated automatically
+- Improved error handling when running test suites
 
 ## [0.2.0] - 2015-11-17
 ### Changed
-- Refactored TestSuite Struct to a class
-- `test` command aggregates recipes into a single run list
 - `test` command `--destroy` option changed to a boolean as `--skip-destroy`
 - Relax all development dependency versions
-
-### Removed
-- Removed mixlib-shellout dependency from gem
 
 ## [0.1.0] - 2015-10-28
 ### Added
