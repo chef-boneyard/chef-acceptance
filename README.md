@@ -65,6 +65,8 @@ Destroy your acceptance setup.
 `chef-acceptance test <suite-name>`
 Runs the provision, verify, and destroy recipes for the given acceptance suite.
 
+> Running `provision`, `verify`, `destroy` or `test` without a suite name will default to all suites.
+
 `chef-acceptance generate <suite-name>`
 Generates acceptance test suite scaffold that you can modify.
 
