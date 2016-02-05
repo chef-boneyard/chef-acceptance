@@ -24,7 +24,7 @@ context "ChefAcceptance::Cli" do
     let(:failure_expected) { true }
 
     it "CLI gives the right error" do
-      expect(run_acceptance).to match(/Could not find test suite 'invalid'/)
+      expect(run_acceptance).to match(/No matching test suites found using regex 'invalid'/)
     end
   end
 
@@ -115,4 +115,35 @@ context "ChefAcceptance::Cli" do
     end
   end
 
+  context "with a regex" do
+    let(:options) { %w{test -suite} }
+    let(:failure_expected) { true }
+
+    it "fails running both of the suites" do
+      output = run_acceptance
+      expect(output).to match(/provision phase/)
+      expect(output).to match(/recipes\/verify.rb:1: syntax error/)
+      expect(output).to match(/\| error-suite \| provision \| #{duration_regex} \| N     \|/)
+      expect(output).to match(/\| error-suite \| verify    \| #{duration_regex} \| Y     \|/)
+      expect(output).to match(/\| test-suite  \| provision \| #{duration_regex} \| N     \|/)
+      expect(output).to match(/\| test-suite  \| verify    \| #{duration_regex} \| N     \|/)
+      expect(output).to match(/\| test-suite  \| destroy   \| #{duration_regex} \| N     \|/)
+    end
+  end
+
+  context "by default" do
+    let(:options) { %w{test} }
+    let(:failure_expected) { true }
+
+    it "fails running both of the suites" do
+      output = run_acceptance
+      expect(output).to match(/provision phase/)
+      expect(output).to match(/recipes\/verify.rb:1: syntax error/)
+      expect(output).to match(/\| error-suite \| provision \| #{duration_regex} \| N     \|/)
+      expect(output).to match(/\| error-suite \| verify    \| #{duration_regex} \| Y     \|/)
+      expect(output).to match(/\| test-suite  \| provision \| #{duration_regex} \| N     \|/)
+      expect(output).to match(/\| test-suite  \| verify    \| #{duration_regex} \| N     \|/)
+      expect(output).to match(/\| test-suite  \| destroy   \| #{duration_regex} \| N     \|/)
+    end
+  end
 end

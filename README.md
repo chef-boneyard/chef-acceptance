@@ -53,17 +53,19 @@ chef-acceptance test my-test-suite
 
 ## Commands
 
-`chef-acceptance provision <suite-name>`
-Runs the provision recipe for the given acceptance suite.
+`chef-acceptance provision <suite-regex>`
+Runs the provision recipe for the matching acceptance suites.
 
-`chef-acceptance verify <suite-name>`
-Runs the tests for the given acceptance suite.
+`chef-acceptance verify <suite-regex>`
+Runs the tests for the matching acceptance suites.
 
-`chef-acceptance destroy <suite-name>`
+`chef-acceptance destroy <suite-regex>`
 Destroy your acceptance setup.
 
-`chef-acceptance test <suite-name>`
-Runs the provision, verify, and destroy recipes for the given acceptance suite.
+`chef-acceptance test <suite-regex>`
+Runs the provision, verify, and destroy recipes for the matching acceptance suites.
+
+> Running `provision`, `verify`, `destroy` or `test` without specifying a suite name will run all suites.
 
 `chef-acceptance generate <suite-name>`
 Generates acceptance test suite scaffold that you can modify.
