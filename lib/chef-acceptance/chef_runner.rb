@@ -51,9 +51,15 @@ module ChefAcceptance
     end
 
     def chef_config_template
+      # Note: we include a .shared directory in the cookbook path in order to
+      # allow suites to share infrastructure. This is currently not supported for
+      # projects to use externally. There will eventually be a better way to do this.
       <<-EOS.gsub(/^\s+/, "")
-        cookbook_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, '..'))}'
-        node_path '#{File.expand_path(File.join(acceptance_cookbook.root_dir, 'nodes'))}'
+        cookbook_path [
+          #{File.expand_path('..', acceptance_cookbook.root_dir).inspect},
+          #{File.expand_path('../../../.shared', acceptance_cookbook.root_dir).inspect}
+        ]
+        node_path #{File.expand_path('nodes', acceptance_cookbook.root_dir).inspect}
         stream_execute_output true
       EOS
     end
