@@ -8,10 +8,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - `node['chef-acceptance']['suite-dir']` attribute available in acceptance cookbook recipes
+- Exit code is set properly based on test failures.
 - Test results summary displayed at end of run
+- Multiple test suite can be run by using a regex
+- Not specifying any suites will run all available suites
+
 
 ### Fixed
 - `test` command returns non-zero exit code when an error is encountered
+- Run Chef under a clean bundler environment.
 
 ### Changed
 - `config.rb` is generated automatically
