@@ -2,6 +2,7 @@ require "chef-acceptance/output_formatter"
 require "chef-acceptance/chef_runner"
 require "chef-acceptance/test_suite"
 require "chef-acceptance/executable_helper"
+require "chef-acceptance/logger"
 
 module ChefAcceptance
   class AcceptanceFatalError < StandardError; end
@@ -12,20 +13,24 @@ module ChefAcceptance
     attr_reader :force_destroy
     attr_reader :output_formatter
     attr_reader :errors
+    attr_reader :logger
 
     def initialize(options = {})
       @force_destroy = options.fetch("force_destroy", false)
       @output_formatter = OutputFormatter.new
       @errors = {}
+      @logger = ChefAcceptance::Logger.new
+    end
+
+    def log(message)
+      logger.log(message)
     end
 
     def run(suite_regex, command)
       begin
         suites = parse_suites(suite_regex)
 
-        puts "Running test suites:"
-        puts suites.join("\n")
-        puts ""
+        log "Running test suites: #{suites.join(", ")}"
 
         # Start the overall run timer
         run_start_time = Time.now
@@ -52,8 +57,8 @@ module ChefAcceptance
         output_formatter.add_row(suite: "Run", command: "Total", duration: total_duration, error: run_error?)
         print_summary
       rescue AcceptanceFatalError => e
-        puts ""
-        puts e
+        log ""
+        log e
         exit(1)
       end
 
@@ -90,9 +95,9 @@ module ChefAcceptance
           begin
             run_command(test_suite, recipe)
           rescue RuntimeError => e
-            puts "Encountered an error running the recipe #{recipe}: #{e.message}\n#{e.backtrace.join("\n")}"
+            log "Encountered an error running the recipe #{recipe}: #{e.message}\n#{e.backtrace.join("\n")}"
             if force_destroy && recipe != "destroy"
-              puts "--force-destroy specified so attempting to run the destroy recipe"
+              log "--force-destroy specified so attempting to run the destroy recipe"
               run_command(test_suite, "force-destroy")
             end
             raise
@@ -118,10 +123,11 @@ module ChefAcceptance
     end
 
     def print_summary
-      puts ""
-      puts "chef-acceptance run #{run_error? ? "failed" : "succeeded"}"
-      puts output_formatter.generate_output
-      puts ""
+      log ""
+      log "chef-acceptance run #{run_error? ? "failed" : "succeeded"}"
+      output_formatter.generate_output.lines.each do |l|
+        log l.chomp
+      end
     end
 
   end

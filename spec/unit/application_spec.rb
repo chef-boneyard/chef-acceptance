@@ -1,12 +1,28 @@
 require "spec_helper"
 require "chef-acceptance/application"
-require "pry"
 
 describe ChefAcceptance::Application do
   let(:app) { ChefAcceptance::Application.new(app_options) }
   let(:app_options) { {} }
   let(:failure_expected) { false }
+  let(:suites) { [] }
+  let(:acceptance_log) {
+    File.read(File.join(@acceptance_dir, ".acceptance_logs", "acceptance.log"))
+  }
 
+  before do
+    @acceptance_dir = Dir.mktmpdir
+    Dir.chdir @acceptance_dir
+    suites.each do |suite|
+      Dir.mkdir File.join(@acceptance_dir, suite)
+    end
+  end
+
+  after do
+    FileUtils.rmdir @acceptance_dir if @acceptance_dir
+  end
+
+  # this function captures the stdout and returns it.
   def application_run(suite_regex, command)
     capture(:stdout) do
       begin
@@ -37,17 +53,7 @@ describe ChefAcceptance::Application do
     let(:suites) { [ "slow", "fast", "flash" ] }
 
     before do
-      @acceptance_dir = Dir.mktmpdir
-      Dir.chdir @acceptance_dir
-      suites.each do |suite|
-        Dir.mkdir File.join(@acceptance_dir, suite)
-      end
-
       allow(ChefAcceptance::ExecutableHelper).to receive(:executable_installed?).with("chef-client").and_return(true)
-    end
-
-    after do
-      FileUtils.rmdir @acceptance_dir if @acceptance_dir
     end
 
     context "without chef-client" do
@@ -97,10 +103,10 @@ describe ChefAcceptance::Application do
           end
 
           it "should output correctly" do
-            output = application_run("fast", c)
-            expect(output).to match(/| fast  | #{c}\s+| 00:00:10 | N     |/)
-            expect(output).to match(/| fast  | Total     | 00:00:00 | N     |/)
-            expect(output).to match(/| Run   | Total     | 00:00:00 | N     |/)
+            stdout = application_run("fast", c)
+            expect_in_acceptance_logs("fast", c, false, stdout, acceptance_log)
+            expect_in_acceptance_logs("fast", "Total", false, stdout, acceptance_log)
+            expect_in_acceptance_logs("Run", "Total", false, stdout, acceptance_log)
           end
 
           context "when failing" do
@@ -108,10 +114,10 @@ describe ChefAcceptance::Application do
             let(:failure_expected) { true }
 
             it "should output correctly" do
-              output = application_run("fast", c)
-              expect(output).to match(/| fast  | #{c}\s+| 00:00:10 | Y     |/)
-              expect(output).to match(/| fast  | Total     | 00:00:00 | Y     |/)
-              expect(output).to match(/| Run   | Total     | 00:00:00 | Y     |/)
+              stdout = application_run("fast", c)
+              expect_in_acceptance_logs("fast", c, true, stdout, acceptance_log)
+              expect_in_acceptance_logs("fast", "Total", true, stdout, acceptance_log)
+              expect_in_acceptance_logs("Run", "Total", true, stdout, acceptance_log)
             end
           end
         end
@@ -138,14 +144,12 @@ describe ChefAcceptance::Application do
           let(:expected_commands) { %w{provision verify destroy} }
 
           it "should output correctly" do
-            expect(application_run("fast", "test")).to include(<<-OUTPUT)
-| Suite | Command   | Duration | Error |
-| fast  | provision | 00:00:10 | N     |
-| fast  | verify    | 00:00:10 | N     |
-| fast  | destroy   | 00:00:10 | N     |
-| fast  | Total     | 00:00:00 | N     |
-| Run   | Total     | 00:00:00 | N     |
-OUTPUT
+            stdout = application_run("fast", "test")
+            expect_in_acceptance_logs("fast", "provision", false, stdout, acceptance_log)
+            expect_in_acceptance_logs("fast", "verify", false, stdout, acceptance_log)
+            expect_in_acceptance_logs("fast", "destroy", false, stdout, acceptance_log)
+            expect_in_acceptance_logs("fast", "Total", false, stdout, acceptance_log)
+            expect_in_acceptance_logs("Run", "Total", false, stdout, acceptance_log)
           end
         end
 
@@ -156,14 +160,12 @@ OUTPUT
           end
 
           it "should output correctly" do
-            expect(application_run("fast", "test")).to include(<<-OUTPUT)
-| Suite | Command   | Duration | Error |
-| fast  | provision | 00:00:10 | N     |
-| fast  | verify    | 00:00:10 | N     |
-| fast  | destroy   | 00:00:10 | N     |
-| fast  | Total     | 00:00:00 | N     |
-| Run   | Total     | 00:00:00 | N     |
-OUTPUT
+            stdout = application_run("fast", "test")
+            expect_in_acceptance_logs("fast", "provision", false, stdout, acceptance_log)
+            expect_in_acceptance_logs("fast", "verify", false, stdout, acceptance_log)
+            expect_in_acceptance_logs("fast", "destroy", false, stdout, acceptance_log)
+            expect_in_acceptance_logs("fast", "Total", false, stdout, acceptance_log)
+            expect_in_acceptance_logs("Run", "Total", false, stdout, acceptance_log)
           end
         end
 
@@ -175,12 +177,10 @@ OUTPUT
             let(:expected_commands) { %w{provision} }
 
             it "should output correctly" do
-              expect(application_run("fast", "test")).to include(<<-OUTPUT)
-| Suite | Command   | Duration | Error |
-| fast  | provision | 00:00:10 | Y     |
-| fast  | Total     | 00:00:00 | Y     |
-| Run   | Total     | 00:00:00 | Y     |
-OUTPUT
+              stdout = application_run("fast", "test")
+              expect_in_acceptance_logs("fast", "provision", true, stdout, acceptance_log)
+              expect_in_acceptance_logs("fast", "Total", true, stdout, acceptance_log)
+              expect_in_acceptance_logs("Run", "Total", true, stdout, acceptance_log)
             end
           end
 
@@ -191,13 +191,11 @@ OUTPUT
             end
 
             it "should output correctly" do
-              expect(application_run("fast", "test")).to include(<<-OUTPUT)
-| Suite | Command       | Duration | Error |
-| fast  | provision     | 00:00:10 | Y     |
-| fast  | force-destroy | 00:00:10 | Y     |
-| fast  | Total         | 00:00:00 | Y     |
-| Run   | Total         | 00:00:00 | Y     |
-OUTPUT
+              stdout = application_run("fast", "test")
+              expect_in_acceptance_logs("fast", "provision", true, stdout, acceptance_log)
+              expect_in_acceptance_logs("fast", "force-destroy", true, stdout, acceptance_log)
+              expect_in_acceptance_logs("fast", "Total", true, stdout, acceptance_log)
+              expect_in_acceptance_logs("Run", "Total", true, stdout, acceptance_log)
             end
           end
         end
