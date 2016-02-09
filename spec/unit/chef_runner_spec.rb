@@ -38,7 +38,8 @@ describe ChefAcceptance::ChefRunner do
           "--force-formatter",
           "-j /tmp/tmp/dna.json",
           "-o acceptance-cookbook::provision",
-        ].join(" "), cwd: root_dir, live_stream: $stdout
+          "--no-color",
+        ].join(" "), cwd: root_dir, live_stream: instance_of(ChefAcceptance::Logger)
       ).and_return(ccr_shellout)
       expect(ccr_shellout).to receive(:run_command)
       expect(ccr_shellout).to receive(:execution_time).and_return(1)

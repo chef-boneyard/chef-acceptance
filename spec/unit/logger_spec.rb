@@ -6,7 +6,13 @@ describe ChefAcceptance::Logger do
   let(:log_dir) { File.join(temp_dir, ".acceptance_logs") }
   let(:log_file) { File.join(log_dir, "acceptance.log") }
 
-  let(:logger) { ChefAcceptance::Logger.new(temp_dir) }
+  let(:logger) do
+    ChefAcceptance::Logger.new(
+      base_dir: temp_dir,
+      log_header: "CHEF-ACCEPTANCE",
+      log_path: File.join(".acceptance_logs", "acceptance.log"),
+    )
+  end
 
   before do
     FileUtils.rm_rf(File.join(temp_dir, "*"))
@@ -24,7 +30,7 @@ describe ChefAcceptance::Logger do
     it "logs correctly" do
       logger.log("test-log")
 
-      expect(File.read(log_file)).to match(log_format("Initialized acceptance logger..."))
+      expect(File.read(log_file)).to match(log_format(/Initialized \[.acceptance_logs\/acceptance.log\] logger.../))
       expect(File.read(log_file)).to match(log_format("test-log"))
     end
 
@@ -37,7 +43,7 @@ describe ChefAcceptance::Logger do
 
       logger.log("test-log")
       expect(File.read(log_file)).not_to match("Some existing content")
-      expect(File.read(log_file)).to match(log_format("Initialized acceptance logger..."))
+      expect(File.read(log_file)).to match(log_format(/Initialized \[.acceptance_logs\/acceptance.log\] logger.../))
       expect(File.read(log_file)).to match(log_format("test-log"))
     end
   end
