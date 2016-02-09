@@ -17,6 +17,10 @@ context "ChefAcceptance::Cli" do
     File.read(File.join(ACCEPTANCE_TEST_DIRECTORY, ".acceptance_logs", "acceptance.log"))
   }
 
+  def suite_log_for(suite_name, command)
+    File.read(File.join(ACCEPTANCE_TEST_DIRECTORY, ".acceptance_logs", suite_name, "#{command}.log"))
+  end
+
   def run_acceptance
     capture(:stdout) do
       begin
@@ -44,6 +48,7 @@ context "ChefAcceptance::Cli" do
         it "runs successfully" do
           stdout = run_acceptance
           expect(stdout).to match(/the #{command} recipe/)
+          expect(suite_log_for("test-suite", command)).to match(/the #{command} recipe/)
           expect_in_acceptance_logs("test-suite", command, false, stdout, acceptance_log)
         end
       end
@@ -55,7 +60,10 @@ context "ChefAcceptance::Cli" do
       it "runs successfully" do
         stdout = run_acceptance
         %w{provision verify destroy}.each do |command|
+          suite_log = suite_log_for("test-suite", command)
           expect(stdout).to match(/the #{command} recipe/)
+          expect(suite_log).to match(/the #{command} recipe/)
+          expect(suite_log).to match(/TEST-SUITE::#{command.upcase}::/)
           expect_in_acceptance_logs("test-suite", command, false, stdout, acceptance_log)
         end
       end
@@ -68,6 +76,7 @@ context "ChefAcceptance::Cli" do
         stdout = run_acceptance
         %w{provision verify destroy}.each do |command|
           expect(stdout).to match(/the #{command} recipe/)
+          expect(suite_log_for("test-suite", command)).to match(/the #{command} recipe/)
           expect_in_acceptance_logs("test-suite", command, false, stdout, acceptance_log)
         end
         expect(stdout).not_to match(/force-destroy/)
@@ -83,10 +92,14 @@ context "ChefAcceptance::Cli" do
 
       it "fails" do
         stdout = run_acceptance
+        suite_log = suite_log_for("error-suite", "verify")
         expect(stdout).to match(/recipes\/verify.rb:1: syntax error/)
+        expect(suite_log).to match(/recipes\/verify.rb:1: syntax error/)
         expect_in_acceptance_logs("error-suite", "verify", true, stdout, acceptance_log)
         expect(stdout).not_to match(/force-destroy/)
+        expect(suite_log).not_to match(/force-destroy/)
         expect(acceptance_log).not_to match(/force-destroy/)
+
       end
     end
 
@@ -98,6 +111,8 @@ context "ChefAcceptance::Cli" do
         stdout = run_acceptance
         expect(stdout).to match(/provision phase/)
         expect(stdout).to match(/recipes\/verify.rb:1: syntax error/)
+        expect(suite_log_for("error-suite", "provision")).to match(/provision phase/)
+        expect(suite_log_for("error-suite", "verify")).to match(/recipes\/verify.rb:1: syntax error/)
         expect_in_acceptance_logs("error-suite", "provision", false, stdout, acceptance_log)
         expect_in_acceptance_logs("error-suite", "verify", true, stdout, acceptance_log)
         expect(stdout).not_to match(/force-destroy/)
@@ -113,6 +128,8 @@ context "ChefAcceptance::Cli" do
         stdout = run_acceptance
         expect(stdout).to match(/provision phase/)
         expect(stdout).to match(/recipes\/verify.rb:1: syntax error/)
+        expect(suite_log_for("error-suite", "provision")).to match(/provision phase/)
+        expect(suite_log_for("error-suite", "verify")).to match(/recipes\/verify.rb:1: syntax error/)
         expect_in_acceptance_logs("error-suite", "provision", false, stdout, acceptance_log)
         expect_in_acceptance_logs("error-suite", "verify", true, stdout, acceptance_log)
         expect_in_acceptance_logs("error-suite", "force-destroy", false, stdout, acceptance_log)
@@ -128,6 +145,11 @@ context "ChefAcceptance::Cli" do
       stdout = run_acceptance
       expect(stdout).to match(/provision phase/)
       expect(stdout).to match(/recipes\/verify.rb:1: syntax error/)
+      expect(suite_log_for("error-suite", "provision")).to match(/provision phase/)
+      expect(suite_log_for("error-suite", "verify")).to match(/recipes\/verify.rb:1: syntax error/)
+      expect(suite_log_for("test-suite", "provision")).to match(/the provision recipe/)
+      expect(suite_log_for("test-suite", "verify")).to match(/the verify recipe/)
+      expect(suite_log_for("test-suite", "destroy")).to match(/the destroy recipe/)
       expect_in_acceptance_logs("error-suite", "provision", false, stdout, acceptance_log)
       expect_in_acceptance_logs("error-suite", "verify", true, stdout, acceptance_log)
       expect_in_acceptance_logs("test-suite", "provision", false, stdout, acceptance_log)
@@ -144,6 +166,11 @@ context "ChefAcceptance::Cli" do
       stdout = run_acceptance
       expect(stdout).to match(/provision phase/)
       expect(stdout).to match(/recipes\/verify.rb:1: syntax error/)
+      expect(suite_log_for("error-suite", "provision")).to match(/provision phase/)
+      expect(suite_log_for("error-suite", "verify")).to match(/recipes\/verify.rb:1: syntax error/)
+      expect(suite_log_for("test-suite", "provision")).to match(/the provision recipe/)
+      expect(suite_log_for("test-suite", "verify")).to match(/the verify recipe/)
+      expect(suite_log_for("test-suite", "destroy")).to match(/the destroy recipe/)
       expect_in_acceptance_logs("error-suite", "provision", false, stdout, acceptance_log)
       expect_in_acceptance_logs("error-suite", "verify", true, stdout, acceptance_log)
       expect_in_acceptance_logs("test-suite", "provision", false, stdout, acceptance_log)

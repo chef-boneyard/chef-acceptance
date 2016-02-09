@@ -3,6 +3,7 @@ require "mixlib/shellout"
 require "json"
 require "bundler"
 require "chef-acceptance/acceptance_cookbook"
+require "chef-acceptance/logger"
 
 module ChefAcceptance
 
@@ -28,7 +29,7 @@ module ChefAcceptance
         cwd: acceptance_cookbook.root_dir,
         chef_config_file: chef_config_file,
         dna_json_file: dna_json_file,
-        recipe: "#{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}",
+        recipe: recipe,
       )
 
       Bundler.with_clean_env do
@@ -84,9 +85,14 @@ module ChefAcceptance
       shellout << "-c #{chef_config_file}"
       shellout << "--force-formatter"
       shellout << "-j #{dna_json_file}"
-      shellout << "-o #{recipe}"
+      shellout << "-o #{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}"
+      shellout << "--no-color"
 
-      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: $stdout)
+      suite_logger = ChefAcceptance::Logger.new(
+        log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
+        log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log"),
+      )
+      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger)
     end
 
     def temp_dir

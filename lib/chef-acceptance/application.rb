@@ -19,7 +19,10 @@ module ChefAcceptance
       @force_destroy = options.fetch("force_destroy", false)
       @output_formatter = OutputFormatter.new
       @errors = {}
-      @logger = ChefAcceptance::Logger.new
+      @logger = ChefAcceptance::Logger.new(
+        log_header: "CHEF-ACCEPTANCE",
+        log_path: File.join(".acceptance_logs", "acceptance.log"),
+      )
     end
 
     def log(message)

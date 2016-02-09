@@ -31,7 +31,7 @@ def ensure_project_root
 end
 
 def acceptance_log_prefix_regex
-  /CHEF-ACCEPTANCE::INFO::\[[\d\-\s:+]+\]/
+  /CHEF-ACCEPTANCE::\[[\d\-\s:+]+\]/
 end
 
 def duration_regex

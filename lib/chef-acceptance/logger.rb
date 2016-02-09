@@ -2,36 +2,45 @@ require "logger"
 
 module ChefAcceptance
   class Logger
-    attr_reader :log_directory
-    attr_reader :acceptance_logger
+    attr_reader :log_path
+    attr_reader :log_header
+    attr_reader :file_logger
     attr_reader :stdout_logger
-    attr_reader :suite_loggers
 
-    def initialize(base_dir = Dir.pwd)
-      @log_directory = File.join(base_dir, ".acceptance_logs")
-      @suite_loggers = []
+    # Supported options:
+    # base_dir: Base directory for the logs. Primarily used by specs. We
+    #   default to current working directory.
+    # log_path: relative path of the log file; relative to the given base_dir.
+    # log_header: the prefix logger will print when logging messages.
+    def initialize(options = {})
+      @log_header = options.fetch(:log_header)
+
+      base_dir = options.fetch(:base_dir, Dir.pwd)
+      @log_path = File.join(base_dir, options.fetch(:log_path))
+      log_directory = File.dirname(log_path)
 
       # create the main logs directory
       FileUtils.mkdir_p(log_directory)
 
-      @acceptance_logger = create_acceptance_logger
+      @file_logger = create_file_logger
       @stdout_logger = create_stdout_logger
 
-      log("Initialized acceptance logger...")
+      log("Initialized [#{options[:log_path]}] logger...")
     end
 
     # logs given message to the acceptance logs and stdout
     def log(message)
-      acceptance_logger.info(message)
+      file_logger.info(message)
       stdout_logger.info(message)
     end
 
+    alias_method :<<, :log
+
     private
 
-    def create_acceptance_logger
+    def create_file_logger
       # auto-flush the log file and truncate the log file if it already exists
-      log_file = File.open(File.join(log_directory, "acceptance.log"),
-        File::WRONLY | File::TRUNC | File::CREAT)
+      log_file = File.open(log_path, File::WRONLY | File::TRUNC | File::CREAT)
       log_file.sync = true
 
       format_logger_for_acceptance(::Logger.new(log_file))
@@ -42,9 +51,11 @@ module ChefAcceptance
     end
 
     def format_logger_for_acceptance(logger)
-      logger.progname = "CHEF-ACCEPTANCE"
+      logger.progname = log_header
       logger.formatter = proc { |severity, datetime, progname, msg|
-        "#{progname}::#{severity}::[#{datetime}] #{msg}\n"
+        line = "#{progname}::[#{datetime}] #{msg}"
+        line = "#{line}\n" unless line.end_with? "\n"
+        line
       }
 
       logger
