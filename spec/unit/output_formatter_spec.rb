@@ -5,7 +5,7 @@ describe ChefAcceptance::OutputFormatter do
   let(:formatter) { ChefAcceptance::OutputFormatter.new }
   let(:test_rows) {
     unformatted_rows.map do |row|
-      row = {suite: row[0], command: row[1], duration: row[2], error: row[3]}
+      row = { suite: row[0], command: row[1], duration: row[2], error: row[3] }
     end
   }
 

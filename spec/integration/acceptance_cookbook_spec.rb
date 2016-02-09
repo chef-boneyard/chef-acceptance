@@ -2,7 +2,7 @@ require "spec_helper"
 require "chef-acceptance/cli"
 
 context "generate command" do
-  let(:options)  { [ "generate", "trivial" ] }
+  let(:options) { [ "generate", "trivial" ] }
 
   it "generates a cookbook" do
     Dir.mktmpdir do |dir|

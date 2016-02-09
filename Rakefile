@@ -7,12 +7,12 @@ task default: :test
 
 desc "run unit tests"
 RSpec::Core::RakeTask.new(:unit) do |task|
-  task.pattern = "spec/chef-acceptance/*_spec.rb"
+  task.pattern = "spec/unit/**/*_spec.rb"
 end
 
 desc "run integration tests"
 RSpec::Core::RakeTask.new(:integration) do |task|
-  task.pattern = "spec/integration/*_spec.rb"
+  task.pattern = "spec/integration/**/*_spec.rb"
 end
 
 begin
