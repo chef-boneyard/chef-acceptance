@@ -17,7 +17,7 @@ describe ChefAcceptance::Logger do
   end
 
   def log_format(message)
-    /CHEF-ACCEPTANCE::INFO::\[[\d\-\s:]+\] #{message}/
+    /#{acceptance_log_prefix_regex} #{message}/
   end
 
   describe "#log" do

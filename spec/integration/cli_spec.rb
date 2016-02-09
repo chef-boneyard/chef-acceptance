@@ -36,7 +36,6 @@ context "ChefAcceptance::Cli" do
     end
   end
 
-
   context "for a valid test suite" do
     %w{ provision verify destroy }.each do |command|
       context "with #{command} command" do
@@ -76,7 +75,6 @@ context "ChefAcceptance::Cli" do
       end
     end
   end
-
 
   context "for a failing verify phase in the suite" do
     context "with verify command" do
