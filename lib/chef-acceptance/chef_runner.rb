@@ -92,7 +92,7 @@ module ChefAcceptance
         log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
         log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log"),
       )
-      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger)
+      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: 3600)
     end
 
     def temp_dir
