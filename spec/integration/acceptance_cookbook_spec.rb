@@ -2,7 +2,7 @@ require "spec_helper"
 require "chef-acceptance/cli"
 
 context "generate command" do
-  let(:options) { [ "generate", "trivial" ] }
+  let(:options) { %w{generate trivial} }
 
   it "generates a cookbook" do
     Dir.mktmpdir do |dir|
@@ -15,7 +15,7 @@ context "generate command" do
           expect(File.exist?(path)).to be true
         end
 
-        ["provision", "verify", "destroy"].each do |recipe|
+        %w{provision verify destroy}.each do |recipe|
           path = File.join(cookbook_directory, "recipes", "#{recipe}.rb")
           expect(File.exist?(path)).to be true
         end
