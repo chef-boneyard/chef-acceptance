@@ -29,7 +29,7 @@ module ChefAcceptance
       end
 
       # The headers are the first row in the table
-      @rows = [["Suite", "Command", "Duration", "Error"]] + rows
+      @rows = [%w{Suite Command Duration Error}] + rows
 
       # Compute the longest item in each column so we can make the column
       # that wide

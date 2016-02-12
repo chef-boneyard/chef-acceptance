@@ -50,7 +50,7 @@ describe ChefAcceptance::Application do
   end
 
   context "running suites" do
-    let(:suites) { [ "slow", "fast", "flash" ] }
+    let(:suites) { %w{slow fast flash} }
 
     before do
       allow(ChefAcceptance::ExecutableHelper).to receive(:executable_installed?).with("chef-client").and_return(true)
