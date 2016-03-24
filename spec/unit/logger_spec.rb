@@ -10,7 +10,7 @@ describe ChefAcceptance::Logger do
     ChefAcceptance::Logger.new(
       base_dir: temp_dir,
       log_header: "CHEF-ACCEPTANCE",
-      log_path: File.join(".acceptance_logs", "acceptance.log"),
+      log_path: File.join(".acceptance_logs", "acceptance.log")
     )
   end
 

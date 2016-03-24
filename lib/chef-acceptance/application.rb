@@ -21,7 +21,7 @@ module ChefAcceptance
       @errors = {}
       @logger = ChefAcceptance::Logger.new(
         log_header: "CHEF-ACCEPTANCE",
-        log_path: File.join(".acceptance_logs", "acceptance.log"),
+        log_path: File.join(".acceptance_logs", "acceptance.log")
       )
     end
 

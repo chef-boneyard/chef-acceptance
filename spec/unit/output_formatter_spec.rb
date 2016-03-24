@@ -23,7 +23,7 @@ describe ChefAcceptance::OutputFormatter do
   context "when there is a single row" do
     let(:unformatted_rows) {
       [
-        ["suite2", "destroy", 10000000000, false]
+        ["suite2", "destroy", 10000000000, false],
       ]
     }
 

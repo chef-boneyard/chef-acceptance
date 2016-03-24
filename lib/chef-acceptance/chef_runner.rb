@@ -29,7 +29,7 @@ module ChefAcceptance
         cwd: acceptance_cookbook.root_dir,
         chef_config_file: chef_config_file,
         dna_json_file: dna_json_file,
-        recipe: recipe,
+        recipe: recipe
       )
 
       Bundler.with_clean_env do
@@ -46,8 +46,8 @@ module ChefAcceptance
     def dna
       {
         "chef-acceptance" => {
-          "suite-dir" => File.expand_path(test_suite.name)
-        }
+          "suite-dir" => File.expand_path(test_suite.name),
+        },
       }
     end
 
@@ -90,7 +90,7 @@ module ChefAcceptance
 
       suite_logger = ChefAcceptance::Logger.new(
         log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
-        log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log"),
+        log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log")
       )
       Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: 3600)
     end
