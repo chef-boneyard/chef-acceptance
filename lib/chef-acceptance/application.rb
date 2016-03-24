@@ -38,22 +38,26 @@ module ChefAcceptance
         # Start the overall run timer
         run_start_time = Time.now
 
-        suites.each do |suite|
-          suite_start_time = Time.now
+        threads = suites.map do |suite|
+          Thread.new do
+            suite_start_time = Time.now
 
-          begin
-            run_suite(suite, command)
-          rescue RuntimeError => e
-            # We catch the errors here and do not raise again in
-            # order to make a clean exit. Since the errors are already
-            # in stdout, we do not print them again.
-            errors[suite] = e
-          ensure
-            suite_duration = Time.now - suite_start_time
-            # Capture overall suite run duration
-            output_formatter.add_row(suite: suite, command: "Total", duration: suite_duration, error: errors[suite])
+            begin
+              run_suite(suite, command)
+            rescue RuntimeError => e
+              # We catch the errors here and do not raise again in
+              # order to make a clean exit. Since the errors are already
+              # in stdout, we do not print them again.
+              errors[suite] = e
+            ensure
+              suite_duration = Time.now - suite_start_time
+              # Capture overall suite run duration
+              output_formatter.add_row(suite: suite, command: "Total", duration: suite_duration, error: errors[suite])
+            end
           end
         end
+
+        threads.each { |t| t.join }
 
         total_duration = Time.now - run_start_time
         # Special footer row that gives overall status for run
