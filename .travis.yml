@@ -5,6 +5,10 @@ addons:
     packages:
       - chef
 
+branches:
+  only:
+  - master
+
 language: ruby
 sudo: false
 rvm:
