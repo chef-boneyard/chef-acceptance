@@ -4,12 +4,17 @@ require "chef-acceptance/test_suite"
 require "chef-acceptance/executable_helper"
 require "chef-acceptance/logger"
 
+require "thread"
+
 module ChefAcceptance
   class AcceptanceFatalError < StandardError; end
 
   # Responsible for running one or more suites and
   # displaying statistics about the runs to the user.
   class Application
+
+    WORKER_POOL_SIZE = 3
+
     attr_reader :force_destroy
     attr_reader :output_formatter
     attr_reader :errors
@@ -23,6 +28,7 @@ module ChefAcceptance
         log_header: "CHEF-ACCEPTANCE",
         log_path: File.join(".acceptance_logs", "acceptance.log")
       )
+      @error_mutex = Mutex.new
     end
 
     def log(message)
@@ -38,26 +44,14 @@ module ChefAcceptance
         # Start the overall run timer
         run_start_time = Time.now
 
-        threads = suites.map do |suite|
-          Thread.new do
-            suite_start_time = Time.now
+        work_queue = Queue.new
+        suites.each { |s| work_queue << [s, command] }
 
-            begin
-              run_suite(suite, command)
-            rescue RuntimeError => e
-              # We catch the errors here and do not raise again in
-              # order to make a clean exit. Since the errors are already
-              # in stdout, we do not print them again.
-              errors[suite] = e
-            ensure
-              suite_duration = Time.now - suite_start_time
-              # Capture overall suite run duration
-              output_formatter.add_row(suite: suite, command: "Total", duration: suite_duration, error: errors[suite])
-            end
-          end
+        workers = WORKER_POOL_SIZE.times.map do |_i|
+          start_worker(work_queue)
         end
 
-        threads.each { |t| t.join }
+        workers.each { |w| w.join }
 
         total_duration = Time.now - run_start_time
         # Special footer row that gives overall status for run
@@ -71,6 +65,19 @@ module ChefAcceptance
 
       # Make sure that exit code reflects the error if we have any
       exit(1) if run_error?
+    end
+
+    def start_worker(queue)
+      Thread.new do
+        begin
+          loop do
+            suite, command = queue.pop(true)
+            run_suite(suite, command)
+          end
+        rescue ThreadError
+          true
+        end
+      end
     end
 
     def run_error?
@@ -91,6 +98,7 @@ module ChefAcceptance
     end
 
     def run_suite(suite, command)
+      suite_start_time = Time.now
       test_suite = TestSuite.new(suite)
 
       unless ExecutableHelper.executable_installed? "chef-client"
@@ -113,6 +121,19 @@ module ChefAcceptance
       else
         run_command(test_suite, command)
       end
+    rescue RuntimeError => e
+      # We catch the errors here and do not raise again in
+      # order to make a clean exit. Since the errors are already
+      # in stdout, we do not print them again.
+      register_error(suite, e)
+    ensure
+      suite_duration = Time.now - suite_start_time
+      # Capture overall suite run duration
+      output_formatter.add_row(suite: suite, command: "Total", duration: suite_duration, error: errors[suite])
+    end
+
+    def register_error(suite, exception)
+      @error_mutex.synchronize { errors[suite] = exception }
     end
 
     def run_command(test_suite, command)
