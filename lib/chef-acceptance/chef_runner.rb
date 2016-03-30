@@ -62,6 +62,7 @@ module ChefAcceptance
         ]
         node_path #{File.expand_path('nodes', acceptance_cookbook.root_dir).inspect}
         stream_execute_output true
+        audit_mode :enabled
       EOS
     end
 
