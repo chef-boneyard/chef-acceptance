@@ -16,12 +16,14 @@ module ChefAcceptance
     WORKER_POOL_SIZE = 3
 
     attr_reader :force_destroy
+    attr_reader :timeout
     attr_reader :output_formatter
     attr_reader :errors
     attr_reader :logger
 
     def initialize(options = {})
       @force_destroy = options.fetch("force_destroy", false)
+      @timeout = options.fetch("timeout", 7200)
       @output_formatter = OutputFormatter.new
       @errors = {}
       @logger = ChefAcceptance::Logger.new(
@@ -72,7 +74,7 @@ module ChefAcceptance
         begin
           loop do
             suite, command = queue.pop(true)
-            run_suite(suite, command)
+            run_suite(suite, command, timeout)
           end
         rescue ThreadError
           true
@@ -97,7 +99,7 @@ module ChefAcceptance
       matched_suites
     end
 
-    def run_suite(suite, command)
+    def run_suite(suite, command, timeout)
       suite_start_time = Time.now
       test_suite = TestSuite.new(suite)
 
@@ -108,18 +110,18 @@ module ChefAcceptance
       if command == "test"
         %w{provision verify destroy}.each do |recipe|
           begin
-            run_command(test_suite, recipe)
+            run_command(test_suite, recipe, timeout)
           rescue RuntimeError => e
             log "Encountered an error running the recipe #{recipe}: #{e.message}\n#{e.backtrace.join("\n")}"
             if force_destroy && recipe != "destroy"
               log "--force-destroy specified so attempting to run the destroy recipe"
-              run_command(test_suite, "force-destroy")
+              run_command(test_suite, "force-destroy", timeout)
             end
             raise
           end
         end
       else
-        run_command(test_suite, command)
+        run_command(test_suite, command, timeout)
       end
     rescue RuntimeError => e
       # We catch the errors here and do not raise again in
@@ -136,9 +138,9 @@ module ChefAcceptance
       @error_mutex.synchronize { errors[suite] = exception }
     end
 
-    def run_command(test_suite, command)
+    def run_command(test_suite, command, timeout)
       recipe = command == "force-destroy" ? "destroy" : command
-      runner = ChefRunner.new(test_suite, recipe)
+      runner = ChefRunner.new(test_suite, recipe, timeout)
       error = false
       begin
         runner.run!

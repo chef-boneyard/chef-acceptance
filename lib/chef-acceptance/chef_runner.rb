@@ -13,12 +13,14 @@ module ChefAcceptance
     attr_reader :test_suite
     attr_reader :recipe
     attr_reader :duration
+    attr_reader :timeout
 
-    def initialize(test_suite, recipe)
+    def initialize(test_suite, recipe, timeout)
       @test_suite = test_suite
       @acceptance_cookbook = test_suite.acceptance_cookbook
       @recipe = recipe
       @duration = 0
+      @timeout = timeout
     end
 
     def run!
@@ -29,7 +31,8 @@ module ChefAcceptance
         cwd: acceptance_cookbook.root_dir,
         chef_config_file: chef_config_file,
         dna_json_file: dna_json_file,
-        recipe: recipe
+        recipe: recipe,
+        timeout: timeout
       )
 
       Bundler.with_clean_env do
@@ -93,7 +96,7 @@ module ChefAcceptance
         log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
         log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log")
       )
-      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: 7200)
+      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: timeout)
     end
 
     def temp_dir

@@ -7,8 +7,9 @@ describe ChefAcceptance::ChefRunner do
   let(:acceptance_cookbook) { instance_double(ChefAcceptance::AcceptanceCookbook, root_dir: root_dir) }
   let(:test_suite) { instance_double(ChefAcceptance::TestSuite, name: "some_suite", acceptance_cookbook: acceptance_cookbook) }
   let(:recipe) { "provision" }
+  let(:timeout) { 7200 }
   let(:root_dir) { "/tmp" }
-  let(:ccr) { ChefAcceptance::ChefRunner.new(test_suite, recipe) }
+  let(:ccr) { ChefAcceptance::ChefRunner.new(test_suite, recipe, timeout) }
   let(:ccr_shellout) { instance_double(Mixlib::ShellOut) }
 
   it "initializes" do
@@ -39,7 +40,7 @@ describe ChefAcceptance::ChefRunner do
           "-j /tmp/tmp/dna.json",
           "-o acceptance-cookbook::provision",
           "--no-color",
-        ].join(" "), cwd: root_dir, live_stream: instance_of(ChefAcceptance::Logger), timeout: 7200
+        ].join(" "), cwd: root_dir, live_stream: instance_of(ChefAcceptance::Logger), timeout: timeout
       ).and_return(ccr_shellout)
       expect(ccr_shellout).to receive(:run_command)
       expect(ccr_shellout).to receive(:execution_time).and_return(1)

@@ -20,10 +20,13 @@ module ChefAcceptance
       end
     end
 
-    desc "test TEST_SUITE_REGEX [--force-destroy]", "Run provision, verify and destroy"
+    desc "test TEST_SUITE_REGEX [--force-destroy][--timeout SECONDS]", "Run provision, verify and destroy"
     option :force_destroy,
            type: :boolean,
            desc: "Force destroy phase after any run"
+    option :timeout,
+           type: :numeric,
+           desc: "Timeout in seconds"
     def test(test_suite_regex = ".*")
       app = Application.new(options)
       app.run(test_suite_regex, "test")

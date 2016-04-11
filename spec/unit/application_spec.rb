@@ -47,6 +47,20 @@ describe ChefAcceptance::Application do
         expect(app.force_destroy).to be true
       end
     end
+
+    it "timeout by default should be 7200" do
+      expect(app.timeout).to equal(7200)
+    end
+
+    context "timeout: 60" do
+      let(:app_options) do
+        { "timeout" => 60 }
+      end
+
+      it "should be settable" do
+        expect(app.timeout).to equal(60)
+      end
+    end
   end
 
   context "running suites" do
@@ -89,6 +103,7 @@ describe ChefAcceptance::Application do
       %w{ provision verify destroy }.each do |c|
         context "for #{c} command" do
           let(:fail_command) { false }
+          let(:timeout) { 7200 }
 
           before do
             runner = instance_double(ChefAcceptance::ChefRunner)
@@ -99,7 +114,7 @@ describe ChefAcceptance::Application do
             allow(runner).to receive(:duration).and_return(10)
 
             expect(ChefAcceptance::ChefRunner).to receive(:new)
-              .with(kind_of(ChefAcceptance::TestSuite), c).and_return(runner)
+              .with(kind_of(ChefAcceptance::TestSuite), c, timeout).and_return(runner)
           end
 
           it "should output correctly" do
@@ -125,6 +140,7 @@ describe ChefAcceptance::Application do
 
       context "for test command" do
         let(:fail_command) { false }
+        let(:timeout) { 7200 }
 
         before do
           runner = instance_double(ChefAcceptance::ChefRunner)
@@ -136,7 +152,7 @@ describe ChefAcceptance::Application do
 
           expected_commands.each do |c|
             expect(ChefAcceptance::ChefRunner).to receive(:new).ordered
-              .with(kind_of(ChefAcceptance::TestSuite), c).and_return(runner)
+              .with(kind_of(ChefAcceptance::TestSuite), c, timeout).and_return(runner)
           end
         end
 
