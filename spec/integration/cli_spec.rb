@@ -178,4 +178,14 @@ context "ChefAcceptance::Cli" do
       expect_in_acceptance_logs("test-suite", "destroy", false, stdout, acceptance_log)
     end
   end
+
+  context "--no-audit-mode" do
+    let(:options) { %w{test test-suite --no-audit-mode} }
+
+    it "sets audit_mode to disabled" do
+      stdout = run_acceptance
+      config_rb = File.join(ACCEPTANCE_TEST_DIRECTORY, "test-suite", ".acceptance", "acceptance-cookbook", "tmp", ".chef", "config.rb")
+      expect(File.read(config_rb)).to match "audit_mode :disabled"
+    end
+  end
 end

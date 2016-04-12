@@ -4,6 +4,7 @@ require "json"
 require "bundler"
 require "chef-acceptance/acceptance_cookbook"
 require "chef-acceptance/logger"
+require "chef-acceptance/options"
 
 module ChefAcceptance
 
@@ -13,12 +14,19 @@ module ChefAcceptance
     attr_reader :test_suite
     attr_reader :recipe
     attr_reader :duration
+    attr_reader :app_options
+    attr_reader :suite_logger
 
-    def initialize(test_suite, recipe)
+    def initialize(test_suite, recipe, app_options)
       @test_suite = test_suite
       @acceptance_cookbook = test_suite.acceptance_cookbook
       @recipe = recipe
       @duration = 0
+      @app_options = app_options
+      @suite_logger = ChefAcceptance::Logger.new(
+        log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
+        log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log")
+      )
     end
 
     def run!
@@ -33,7 +41,13 @@ module ChefAcceptance
       )
 
       Bundler.with_clean_env do
-        chef_shellout.run_command
+        begin
+          chef_shellout.run_command
+        rescue Mixlib::ShellOut::CommandTimeout => e
+          suite_logger.log("Command timed out after #{app_options.timeout} secs")
+          raise
+        end
+
         # execution_time can return nil and we always want to return a number
         # for duration().
         @duration = chef_shellout.execution_time || 0
@@ -62,7 +76,7 @@ module ChefAcceptance
         ]
         node_path #{File.expand_path('nodes', acceptance_cookbook.root_dir).inspect}
         stream_execute_output true
-        audit_mode :enabled
+        audit_mode #{app_options.audit_mode ? ":enabled" : ":disabled"}
       EOS
     end
 
@@ -89,11 +103,7 @@ module ChefAcceptance
       shellout << "-o #{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}"
       shellout << "--no-color"
 
-      suite_logger = ChefAcceptance::Logger.new(
-        log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
-        log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log")
-      )
-      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: 7200)
+      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: app_options.timeout)
     end
 
     def temp_dir

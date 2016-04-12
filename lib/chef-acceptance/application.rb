@@ -3,6 +3,7 @@ require "chef-acceptance/chef_runner"
 require "chef-acceptance/test_suite"
 require "chef-acceptance/executable_helper"
 require "chef-acceptance/logger"
+require "chef-acceptance/options"
 
 require "thread"
 
@@ -15,13 +16,13 @@ module ChefAcceptance
 
     WORKER_POOL_SIZE = 3
 
-    attr_reader :force_destroy
+    attr_reader :options
     attr_reader :output_formatter
     attr_reader :errors
     attr_reader :logger
 
     def initialize(options = {})
-      @force_destroy = options.fetch("force_destroy", false)
+      @options = ChefAcceptance::Options.new(options)
       @output_formatter = OutputFormatter.new
       @errors = {}
       @logger = ChefAcceptance::Logger.new(
@@ -111,7 +112,7 @@ module ChefAcceptance
             run_command(test_suite, recipe)
           rescue RuntimeError => e
             log "Encountered an error running the recipe #{recipe}: #{e.message}\n#{e.backtrace.join("\n")}"
-            if force_destroy && recipe != "destroy"
+            if options.force_destroy && recipe != "destroy"
               log "--force-destroy specified so attempting to run the destroy recipe"
               run_command(test_suite, "force-destroy")
             end
@@ -138,7 +139,7 @@ module ChefAcceptance
 
     def run_command(test_suite, command)
       recipe = command == "force-destroy" ? "destroy" : command
-      runner = ChefRunner.new(test_suite, recipe)
+      runner = ChefRunner.new(test_suite, recipe, options)
       error = false
       begin
         runner.run!

@@ -35,7 +35,15 @@ describe ChefAcceptance::Application do
 
   context "options" do
     it "force-destroy by default should be false" do
-      expect(app.force_destroy).to be false
+      expect(app.options.force_destroy).to be false
+    end
+
+    it "timeout by default" do
+      expect(app.options.timeout).to eq 7200
+    end
+
+    it "audit_mode by default" do
+      expect(app.options.audit_mode).to be true
     end
 
     context "force-destroy: true" do
@@ -44,7 +52,27 @@ describe ChefAcceptance::Application do
       end
 
       it "should be settable" do
-        expect(app.force_destroy).to be true
+        expect(app.options.force_destroy).to be true
+      end
+    end
+
+    context "set timeout" do
+      let(:app_options) do
+        { "timeout" => 10000 }
+      end
+
+      it "should be settable" do
+        expect(app.options.timeout).to eq 10000
+      end
+    end
+
+    context "set audit_mode" do
+      let(:app_options) do
+        { "audit_mode" => false }
+      end
+
+      it "should be settable" do
+        expect(app.options.audit_mode).to eq false
       end
     end
   end
@@ -99,7 +127,7 @@ describe ChefAcceptance::Application do
             allow(runner).to receive(:duration).and_return(10)
 
             expect(ChefAcceptance::ChefRunner).to receive(:new)
-              .with(kind_of(ChefAcceptance::TestSuite), c).and_return(runner)
+              .with(kind_of(ChefAcceptance::TestSuite), c, kind_of(ChefAcceptance::Options)).and_return(runner)
           end
 
           it "should output correctly" do
@@ -136,7 +164,7 @@ describe ChefAcceptance::Application do
 
           expected_commands.each do |c|
             expect(ChefAcceptance::ChefRunner).to receive(:new).ordered
-              .with(kind_of(ChefAcceptance::TestSuite), c).and_return(runner)
+              .with(kind_of(ChefAcceptance::TestSuite), c, kind_of(ChefAcceptance::Options)).and_return(runner)
           end
         end
 
