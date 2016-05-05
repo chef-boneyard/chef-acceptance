@@ -25,18 +25,19 @@ describe ChefAcceptance::ChefRunner do
 
     it "successfully runs the shellout" do
       # step into prepare_required_files
-      expect(FileUtils).to receive(:rmtree).with("#{root_dir}/tmp")
-      expect(FileUtils).to receive(:mkpath).with("#{root_dir}/tmp")
-      expect(File).to receive(:write).with("#{root_dir}/tmp/dna.json", /suite-dir/)
-      expect(FileUtils).to receive(:mkpath).with("#{root_dir}/tmp/.chef")
-      expect(File).to receive(:write).with("#{root_dir}/tmp/.chef/config.rb", /cookbook_path/)
+      tmp_dir = File.join(Dir.tmpdir, "chef-acceptance", "some_suite")
+      expect(FileUtils).to receive(:rmtree).with(tmp_dir)
+      expect(FileUtils).to receive(:mkpath).with(tmp_dir)
+      expect(File).to receive(:write).with("#{tmp_dir}/dna.json", /suite-dir/)
+      expect(FileUtils).to receive(:mkpath).with("#{tmp_dir}/.chef")
+      expect(File).to receive(:write).with("#{tmp_dir}/.chef/config.rb", /cookbook_path/)
 
       expect(Mixlib::ShellOut).to receive(:new).with(
         [
           "chef-client -z",
-          "-c /tmp/tmp/.chef/config.rb",
+          "-c #{tmp_dir}/.chef/config.rb",
           "--force-formatter",
-          "-j /tmp/tmp/dna.json",
+          "-j #{tmp_dir}/dna.json",
           "-o acceptance-cookbook::provision",
           "--no-color",
         ].join(" "), cwd: root_dir, live_stream: instance_of(ChefAcceptance::Logger), timeout: 7200
