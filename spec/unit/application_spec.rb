@@ -99,7 +99,7 @@ describe ChefAcceptance::Application do
             allow(runner).to receive(:duration).and_return(10)
 
             expect(ChefAcceptance::ChefRunner).to receive(:new)
-              .with(kind_of(ChefAcceptance::TestSuite), c).and_return(runner)
+              .with(kind_of(ChefAcceptance::TestSuite), c, log_dir: kind_of(String)).and_return(runner)
           end
 
           it "should output correctly" do
@@ -136,7 +136,7 @@ describe ChefAcceptance::Application do
 
           expected_commands.each do |c|
             expect(ChefAcceptance::ChefRunner).to receive(:new).ordered
-              .with(kind_of(ChefAcceptance::TestSuite), c).and_return(runner)
+              .with(kind_of(ChefAcceptance::TestSuite), c, log_dir: kind_of(String)).and_return(runner)
           end
         end
 

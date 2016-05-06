@@ -2,7 +2,6 @@ $LOAD_PATH << File.join(File.dirname(__FILE__), "../lib")
 
 RSpec.configure do |conf|
   conf.filter_run focus: true
-  conf.filter_run_excluding vagrant: true
   conf.run_all_when_everything_filtered = true
 
   conf.expect_with :rspec do |c|

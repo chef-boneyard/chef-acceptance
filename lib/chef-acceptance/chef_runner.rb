@@ -4,6 +4,7 @@ require "json"
 require "bundler"
 require "chef-acceptance/acceptance_cookbook"
 require "chef-acceptance/logger"
+require "tmpdir"
 
 module ChefAcceptance
 
@@ -13,12 +14,14 @@ module ChefAcceptance
     attr_reader :test_suite
     attr_reader :recipe
     attr_reader :duration
+    attr_reader :log_dir
 
-    def initialize(test_suite, recipe)
+    def initialize(test_suite, recipe, log_dir: File.join(Dir.pwd, ".acceptance_logs"))
       @test_suite = test_suite
       @acceptance_cookbook = test_suite.acceptance_cookbook
       @recipe = recipe
       @duration = 0
+      @log_dir = log_dir
     end
 
     def run!
@@ -60,7 +63,7 @@ module ChefAcceptance
           #{File.expand_path('..', acceptance_cookbook.root_dir).inspect},
           #{File.expand_path('../../../.shared', acceptance_cookbook.root_dir).inspect}
         ]
-        node_path #{File.expand_path('nodes', acceptance_cookbook.root_dir).inspect}
+        node_path #{File.expand_path('nodes', temp_dir).inspect}
         stream_execute_output true
         audit_mode :enabled
       EOS
@@ -91,13 +94,13 @@ module ChefAcceptance
 
       suite_logger = ChefAcceptance::Logger.new(
         log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
-        log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log")
+        log_path: File.join(log_dir, test_suite.name, "#{recipe}.log")
       )
       Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: 7200)
     end
 
     def temp_dir
-      File.join(acceptance_cookbook.root_dir, "tmp")
+      File.join(Dir.tmpdir, "chef-acceptance", test_suite.name)
     end
 
     def chef_dir

@@ -4,21 +4,22 @@ require "chef-acceptance/cli"
 context "ChefAcceptance::Cli" do
   before do
     Dir.chdir(ACCEPTANCE_TEST_DIRECTORY)
-    FileUtils.rm_rf(File.join(ACCEPTANCE_TEST_DIRECTORY, ".acceptance_logs"))
+    FileUtils.rm_rf(log_directory)
   end
 
   after do
-    FileUtils.rm_rf(File.join(ACCEPTANCE_TEST_DIRECTORY, ".acceptance_logs"))
+    FileUtils.rm_rf(log_directory)
   end
 
   let(:failure_expected) { false }
+  let(:log_directory) { File.join(ACCEPTANCE_TEST_DIRECTORY, ".acceptance_logs") }
 
   let(:acceptance_log) {
-    File.read(File.join(ACCEPTANCE_TEST_DIRECTORY, ".acceptance_logs", "acceptance.log"))
+    File.read(File.join(log_directory, "acceptance.log"))
   }
 
   def suite_log_for(suite_name, command)
-    File.read(File.join(ACCEPTANCE_TEST_DIRECTORY, ".acceptance_logs", suite_name, "#{command}.log"))
+    File.read(File.join(log_directory, suite_name, "#{command}.log"))
   end
 
   def run_acceptance
@@ -51,6 +52,18 @@ context "ChefAcceptance::Cli" do
           expect(suite_log_for("test-suite", command)).to match(/the #{command} recipe/)
           expect_in_acceptance_logs("test-suite", command, false, stdout, acceptance_log)
         end
+      end
+    end
+
+    context "with provision and custom log directory" do
+      let(:log_directory) { Dir.mktmpdir }
+      let(:options) { [ "provision", "test-suite", "--log-dir=#{log_directory}" ] }
+
+      it "runs successfully" do
+        stdout = run_acceptance
+        expect(stdout).to match(/the provision recipe/)
+        expect(suite_log_for("test-suite", "provision")).to match(/the provision recipe/)
+        expect_in_acceptance_logs("test-suite", "provision", false, stdout, acceptance_log)
       end
     end
 
