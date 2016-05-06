@@ -12,6 +12,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Test results summary displayed at end of run
 - Multiple test suite can be run by using a regex
 - Not specifying any suites will run all available suites
+- `--timeout=N` option to configure timeout for chef-client
+- `--audit-mode` and `--no-audit-mode` options set audit_mode in the config.rb to :enabled or :disabled, respectively.
 
 
 ### Fixed

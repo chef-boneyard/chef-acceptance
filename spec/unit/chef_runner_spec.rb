@@ -2,13 +2,15 @@ require "spec_helper"
 require "chef-acceptance/chef_runner"
 require "chef-acceptance/test_suite"
 require "chef-acceptance/acceptance_cookbook"
+require "chef-acceptance/options"
 
 describe ChefAcceptance::ChefRunner do
   let(:acceptance_cookbook) { instance_double(ChefAcceptance::AcceptanceCookbook, root_dir: root_dir) }
   let(:test_suite) { instance_double(ChefAcceptance::TestSuite, name: "some_suite", acceptance_cookbook: acceptance_cookbook) }
   let(:recipe) { "provision" }
   let(:root_dir) { "/tmp" }
-  let(:ccr) { ChefAcceptance::ChefRunner.new(test_suite, recipe) }
+  let(:options) { ChefAcceptance::Options.new }
+  let(:ccr) { ChefAcceptance::ChefRunner.new(test_suite, recipe, options) }
   let(:ccr_shellout) { instance_double(Mixlib::ShellOut) }
 
   it "initializes" do
