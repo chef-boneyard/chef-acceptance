@@ -15,4 +15,4 @@ Gemfile.lock
 .kitchen.local.yml
 
 pkg/
-.acceptance_logs
+.acceptance_data

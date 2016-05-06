@@ -8,7 +8,7 @@ describe ChefAcceptance::ChefRunner do
   let(:acceptance_cookbook) { instance_double(ChefAcceptance::AcceptanceCookbook, root_dir: root_dir) }
   let(:test_suite) { instance_double(ChefAcceptance::TestSuite, name: "some_suite", acceptance_cookbook: acceptance_cookbook) }
   let(:recipe) { "provision" }
-  let(:root_dir) { "/tmp" }
+  let(:root_dir) { options.data_path }
   let(:options) { ChefAcceptance::Options.new }
   let(:ccr) { ChefAcceptance::ChefRunner.new(test_suite, recipe, options) }
   let(:ccr_shellout) { instance_double(Mixlib::ShellOut) }
@@ -27,18 +27,18 @@ describe ChefAcceptance::ChefRunner do
 
     it "successfully runs the shellout" do
       # step into prepare_required_files
-      expect(FileUtils).to receive(:rmtree).with("#{root_dir}/tmp")
-      expect(FileUtils).to receive(:mkpath).with("#{root_dir}/tmp")
-      expect(File).to receive(:write).with("#{root_dir}/tmp/dna.json", /suite-dir/)
-      expect(FileUtils).to receive(:mkpath).with("#{root_dir}/tmp/.chef")
-      expect(File).to receive(:write).with("#{root_dir}/tmp/.chef/config.rb", /cookbook_path/)
+      expect(FileUtils).to receive(:rmtree).with("#{root_dir}/chef/some_suite/provision")
+      expect(FileUtils).to receive(:mkpath).with("#{root_dir}/chef/some_suite/provision").at_least(:once)
+      expect(File).to receive(:write).with("#{root_dir}/chef/some_suite/provision/dna.json", /suite-dir/)
+      expect(FileUtils).to receive(:mkpath).with("#{root_dir}/chef/some_suite/provision/.chef")
+      expect(File).to receive(:write).with("#{root_dir}/chef/some_suite/provision/.chef/config.rb", /cookbook_path/)
 
       expect(Mixlib::ShellOut).to receive(:new).with(
         [
           "chef-client -z",
-          "-c /tmp/tmp/.chef/config.rb",
+          "-c #{root_dir}/chef/some_suite/provision/.chef/config.rb",
           "--force-formatter",
-          "-j /tmp/tmp/dna.json",
+          "-j #{root_dir}/chef/some_suite/provision/dna.json",
           "-o acceptance-cookbook::provision",
           "--no-color",
         ].join(" "), cwd: root_dir, live_stream: instance_of(ChefAcceptance::Logger), timeout: 7200

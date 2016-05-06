@@ -25,7 +25,7 @@ module ChefAcceptance
       @app_options = app_options
       @suite_logger = ChefAcceptance::Logger.new(
         log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
-        log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log")
+        log_path: File.join(app_options.data_path, "logs", test_suite.name, "#{recipe}.log")
       )
     end
 
@@ -74,19 +74,17 @@ module ChefAcceptance
           #{File.expand_path('..', acceptance_cookbook.root_dir).inspect},
           #{File.expand_path('../../../.shared', acceptance_cookbook.root_dir).inspect}
         ]
-        node_path #{File.expand_path('nodes', acceptance_cookbook.root_dir).inspect}
+        node_path "#{node_path}"
         stream_execute_output true
         audit_mode #{app_options.audit_mode ? ":enabled" : ":disabled"}
       EOS
     end
 
     def prepare_required_files
-      FileUtils.rmtree temp_dir
-      FileUtils.mkpath temp_dir
-      File.write(dna_json_file, JSON.pretty_generate(dna))
-
-      FileUtils.mkpath chef_dir
-      File.write(chef_config_file, chef_config_template)
+      FileUtils.rmtree data_path
+      FileUtils.mkpath data_path
+      create_file(dna_json_file, JSON.pretty_generate(dna))
+      create_file(chef_config_file, chef_config_template)
     end
 
     def build_shellout(options = {})
@@ -106,20 +104,25 @@ module ChefAcceptance
       Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: app_options.timeout)
     end
 
-    def temp_dir
-      File.join(acceptance_cookbook.root_dir, "tmp")
-    end
-
-    def chef_dir
-      File.join(temp_dir, ".chef")
+    def data_path
+      File.expand_path(File.join(app_options.data_path, "chef", test_suite.name, recipe))
     end
 
     def chef_config_file
-      File.expand_path(File.join(chef_dir, "config.rb"))
+      File.join(data_path, ".chef/config.rb")
     end
 
     def dna_json_file
-      File.expand_path(File.join(temp_dir, "dna.json"))
+      File.join(data_path, "dna.json")
+    end
+
+    def node_path
+      File.join(data_path, "nodes")
+    end
+
+    def create_file(file_path, file_contents)
+      FileUtils.mkpath(File.dirname(file_path))
+      File.write(file_path, file_contents)
     end
   end
 end

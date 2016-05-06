@@ -53,6 +53,9 @@ chef-acceptance test my-test-suite
 
 ## Commands
 
+For available options of commands run:
+`chef-acceptance help <command-name>`
+
 `chef-acceptance provision <suite-regex>`
 Runs the provision recipe for the matching acceptance suites.
 
@@ -87,8 +90,7 @@ end
 
 ## Change Log
 
-The [change log](CHANGELOG.md) for this project follows the principles outlined
-from [Keep a CHANGELOG](http://keepachangelog.com/).
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## Releasing chef-acceptance
 
