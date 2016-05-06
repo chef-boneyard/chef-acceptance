@@ -16,17 +16,19 @@ module ChefAcceptance
     WORKER_POOL_SIZE = 3
 
     attr_reader :force_destroy
+    attr_reader :log_dir
     attr_reader :output_formatter
     attr_reader :errors
     attr_reader :logger
 
     def initialize(options = {})
       @force_destroy = options.fetch("force_destroy", false)
+      @log_dir = options.fetch("log_dir", File.join(Dir.pwd, ".acceptance_logs"))
       @output_formatter = OutputFormatter.new
       @errors = {}
       @logger = ChefAcceptance::Logger.new(
         log_header: "CHEF-ACCEPTANCE",
-        log_path: File.join(".acceptance_logs", "acceptance.log")
+        log_path: File.join(log_dir, "acceptance.log")
       )
       @error_mutex = Mutex.new
     end
@@ -138,7 +140,7 @@ module ChefAcceptance
 
     def run_command(test_suite, command)
       recipe = command == "force-destroy" ? "destroy" : command
-      runner = ChefRunner.new(test_suite, recipe)
+      runner = ChefRunner.new(test_suite, recipe, log_dir: log_dir)
       error = false
       begin
         runner.run!

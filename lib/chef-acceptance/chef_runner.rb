@@ -14,12 +14,14 @@ module ChefAcceptance
     attr_reader :test_suite
     attr_reader :recipe
     attr_reader :duration
+    attr_reader :log_dir
 
-    def initialize(test_suite, recipe)
+    def initialize(test_suite, recipe, log_dir: File.join(Dir.pwd, ".acceptance_logs"))
       @test_suite = test_suite
       @acceptance_cookbook = test_suite.acceptance_cookbook
       @recipe = recipe
       @duration = 0
+      @log_dir = log_dir
     end
 
     def run!
@@ -92,7 +94,7 @@ module ChefAcceptance
 
       suite_logger = ChefAcceptance::Logger.new(
         log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
-        log_path: File.join(".acceptance_logs", test_suite.name, "#{recipe}.log")
+        log_path: File.join(log_dir, test_suite.name, "#{recipe}.log")
       )
       Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: 7200)
     end

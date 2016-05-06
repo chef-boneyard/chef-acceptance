@@ -24,4 +24,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "pry-byebug"
   s.add_development_dependency "pry-stack_explorer"
   s.add_development_dependency "chef"
+  s.add_development_dependency "rb-readline"
 end
