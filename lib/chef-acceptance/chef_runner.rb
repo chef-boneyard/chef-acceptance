@@ -75,6 +75,7 @@ module ChefAcceptance
           #{File.expand_path('../../../.shared', acceptance_cookbook.root_dir).inspect}
         ]
         node_path "#{node_path}"
+        cache_path "#{cache_path}"
         stream_execute_output true
         audit_mode #{app_options.audit_mode ? ":enabled" : ":disabled"}
       EOS
@@ -118,6 +119,11 @@ module ChefAcceptance
 
     def node_path
       File.join(data_path, "nodes")
+    end
+
+    def cache_path
+      # chef will append "cache" to the configured directory.
+      data_path
     end
 
     def create_file(file_path, file_contents)
