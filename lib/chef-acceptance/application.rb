@@ -21,13 +21,13 @@ module ChefAcceptance
     attr_reader :errors
     attr_reader :logger
 
-    def initialize(options = {})
-      @options = ChefAcceptance::Options.new(options)
+    def initialize(opt = {})
+      @options = ChefAcceptance::Options.new(opt)
       @output_formatter = OutputFormatter.new
       @errors = {}
       @logger = ChefAcceptance::Logger.new(
         log_header: "CHEF-ACCEPTANCE",
-        log_path: File.join(".acceptance_logs", "acceptance.log")
+        log_path: File.join(options.data_path, "logs", "acceptance.log")
       )
       @error_mutex = Mutex.new
     end

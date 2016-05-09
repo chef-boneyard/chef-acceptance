@@ -25,6 +25,12 @@ module ChefAcceptance
       desc: "Enable or disable audit_mode (Default: true)",
     ]
 
+    option_data_path = [
+      :data_path,
+      type: :string,
+      desc: "Override the directory in which temp and log files will be created. (Default: ./.acceptance_data)",
+    ]
+
     #
     # Create core acceptance commands
     #
@@ -32,6 +38,7 @@ module ChefAcceptance
       desc "#{command} TEST_SUITE_REGEX", "Run #{command}"
       option(*option_timeout)
       option(*option_audit_mode)
+      option(*option_data_path)
       define_method(command) do |test_suite_regex = ".*"|
         app = Application.new(options)
         app.run(test_suite_regex, command)
@@ -44,6 +51,7 @@ module ChefAcceptance
            desc: "Force destroy phase after any run"
     option(*option_timeout)
     option(*option_audit_mode)
+    option(*option_data_path)
     def test(test_suite_regex = ".*")
       app = Application.new(options)
       app.run(test_suite_regex, "test")

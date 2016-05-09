@@ -7,7 +7,7 @@ describe ChefAcceptance::Application do
   let(:failure_expected) { false }
   let(:suites) { [] }
   let(:acceptance_log) {
-    File.read(File.join(@acceptance_dir, ".acceptance_logs", "acceptance.log"))
+    File.read(File.join(@acceptance_dir, ".acceptance_data", "logs", "acceptance.log"))
   }
 
   before do
@@ -44,6 +44,10 @@ describe ChefAcceptance::Application do
 
     it "audit_mode by default" do
       expect(app.options.audit_mode).to be true
+    end
+
+    it "data_path by default" do
+      expect(app.options.data_path).to include(".acceptance_data")
     end
 
     context "force-destroy: true" do
