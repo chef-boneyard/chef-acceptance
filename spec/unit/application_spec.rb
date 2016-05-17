@@ -15,6 +15,7 @@ describe ChefAcceptance::Application do
     Dir.chdir @acceptance_dir
     suites.each do |suite|
       Dir.mkdir File.join(@acceptance_dir, suite)
+      Dir.mkdir File.join(@acceptance_dir, suite, ".acceptance")
     end
   end
 
@@ -238,6 +239,18 @@ describe ChefAcceptance::Application do
       it "runs multiple suites" do
         expect(app).to receive(:run_suite).twice
         application_run("f", "provision")
+      end
+    end
+
+    context "with a non-suite directory" do
+      before do
+        # create a directory that does not contain an acceptance cookbook.
+        Dir.mkdir File.join(@acceptance_dir, "vendor")
+      end
+
+      it "does not include non-suite directory in the run" do
+        expect(app).to receive(:run_suite).exactly(3).times
+        application_run("", "provision")
       end
     end
 
