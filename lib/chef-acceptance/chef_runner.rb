@@ -34,7 +34,6 @@ module ChefAcceptance
       prepare_required_files
 
       chef_shellout = build_shellout(
-        cwd: acceptance_cookbook.root_dir,
         chef_config_file: chef_config_file,
         dna_json_file: dna_json_file,
         recipe: recipe
@@ -89,7 +88,6 @@ module ChefAcceptance
     end
 
     def build_shellout(options = {})
-      cwd = options.fetch(:cwd, Dir.pwd)
       recipe = options.fetch(:recipe)
       chef_config_file = options.fetch(:chef_config_file)
       dna_json_file = options.fetch(:dna_json_file)
@@ -102,7 +100,7 @@ module ChefAcceptance
       shellout << "-o #{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}"
       shellout << "--no-color"
 
-      Mixlib::ShellOut.new(shellout.join(" "), cwd: cwd, live_stream: suite_logger, timeout: app_options.timeout)
+      Mixlib::ShellOut.new(shellout.join(" "), live_stream: suite_logger, timeout: app_options.timeout)
     end
 
     def data_path

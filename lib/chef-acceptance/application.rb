@@ -95,7 +95,11 @@ module ChefAcceptance
       matched_suites = suites.select { |s| /#{regex}/ =~ s }
       raise AcceptanceFatalError, "No matching test suites found using regex '#{regex}'" if matched_suites.empty?
 
-      matched_suites
+      # only select the directories containing the .acceptance under them.
+      # this way we can skip system directories like 'vendor'
+      matched_suites.select do |s|
+        File.directory?(File.join(s, ".acceptance"))
+      end
     end
 
     def run_suite(suite, command)
