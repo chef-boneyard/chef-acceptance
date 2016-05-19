@@ -31,6 +31,10 @@ context "ChefAcceptance::Cli" do
     end
   end
 
+  it "exits with non-zero error code" do
+    expect(ChefAcceptance::Cli.exit_on_failure?).to be(true)
+  end
+
   context "for an invalid test suite" do
     let(:options) { %w{provision invalid} }
     let(:failure_expected) { true }

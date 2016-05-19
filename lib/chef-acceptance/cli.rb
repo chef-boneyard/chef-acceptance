@@ -75,5 +75,11 @@ module ChefAcceptance
       client = ExecutableHelper.executable_installed? "chef-client"
       puts "chef-client path: #{client ? client : "not found in #{ENV['PATH']}"}"
     end
+
+    # By default, Thor returns exit(0) when an error occurs.
+    def self.exit_on_failure?
+      true
+    end
+
   end
 end
