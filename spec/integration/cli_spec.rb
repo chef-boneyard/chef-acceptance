@@ -35,6 +35,28 @@ context "ChefAcceptance::Cli" do
     expect(ChefAcceptance::Cli.exit_on_failure?).to be(true)
   end
 
+  context "with invalid command" do
+    let(:options) { [ "non-existing"] }
+    let(:failure_expected) { true }
+
+    it "exits non-zero" do
+      # Setting :failure_expected is going to check for SystemExit
+      # which means Cli will exit with non-zero exit code
+      run_acceptance
+    end
+  end
+
+  context "with invalid option" do
+    let(:options) { [ "test", "--non-existing" ] }
+    let(:failure_expected) { true }
+
+    it "exits non-zero" do
+      # Setting :failure_expected is going to check for SystemExit
+      # which means Cli will exit with non-zero exit code
+      run_acceptance
+    end
+  end
+
   context "for an invalid test suite" do
     let(:options) { %w{provision invalid} }
     let(:failure_expected) { true }
