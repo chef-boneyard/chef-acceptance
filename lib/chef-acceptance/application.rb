@@ -30,6 +30,7 @@ module ChefAcceptance
         log_path: File.join(options.data_path, "logs", "acceptance.log")
       )
       @error_mutex = Mutex.new
+      log("\n$$$$$$$$$$$$$$$$$ @options: #{@options}")
     end
 
     def log(message)
