@@ -41,7 +41,10 @@ describe ChefAcceptance::ChefRunner do
           "-j #{root_dir}/chef/some_suite/provision/dna.json",
           "-o acceptance-cookbook::provision",
           "--no-color",
-        ].join(" "), live_stream: instance_of(ChefAcceptance::Logger), timeout: 7200
+        ].join(" "),
+        live_stream: instance_of(ChefAcceptance::Logger),
+        timeout: 7200,
+        env: instance_of(Hash)
       ).and_return(ccr_shellout)
       expect(ccr_shellout).to receive(:run_command)
       expect(ccr_shellout).to receive(:execution_time).and_return(1)

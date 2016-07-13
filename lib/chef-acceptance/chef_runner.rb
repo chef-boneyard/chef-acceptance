@@ -36,7 +36,21 @@ module ChefAcceptance
       chef_shellout = build_shellout(
         chef_config_file: chef_config_file,
         dna_json_file: dna_json_file,
-        recipe: recipe
+        recipe: recipe,
+        env: {
+          "_ORIGINAL_GEM_PATH" => nil,
+          "BUNDLE_BIN_PATH" => nil,
+          "BUNDLER_EDITOR" => nil,
+          "BUNDLE_GEMFILE" => nil,
+          "GEM_HOME" => nil,
+          "GEM_PATH" => nil,
+          "GEM_ROOT" => nil,
+          "RUBYLIB" => nil,
+          "RUBYOPT" => nil,
+          "RUBY_ENGINE" => nil,
+          "RUBY_ROOT" => nil,
+          "RUBY_VERSION" => nil,
+        }
       )
 
       Bundler.with_clean_env do
@@ -91,6 +105,7 @@ module ChefAcceptance
       recipe = options.fetch(:recipe)
       chef_config_file = options.fetch(:chef_config_file)
       dna_json_file = options.fetch(:dna_json_file)
+      env = options.fetch(:env)
 
       shellout = []
       shellout << "chef-client -z"
@@ -100,7 +115,7 @@ module ChefAcceptance
       shellout << "-o #{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}"
       shellout << "--no-color"
 
-      Mixlib::ShellOut.new(shellout.join(" "), live_stream: suite_logger, timeout: app_options.timeout)
+      Mixlib::ShellOut.new(shellout.join(" "), live_stream: suite_logger, timeout: app_options.timeout, env: env)
     end
 
     def data_path
