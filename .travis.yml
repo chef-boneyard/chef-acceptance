@@ -9,6 +9,9 @@ branches:
   only:
   - master
 
+before_script:
+  - export PATH="/opt/chef/bin:$PATH"
+
 language: ruby
 sudo: false
 rvm:
