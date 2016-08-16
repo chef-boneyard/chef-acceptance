@@ -31,6 +31,12 @@ module ChefAcceptance
       desc: "Override the directory in which temp and log files will be created. (Default: ./.acceptance_data)",
     ]
 
+    option_chef_client_binary = [
+      :chef_client_binary,
+      type: :string,
+      desc: "Override the chef-client binary to run--e.g. `bundle exec chef-client`. (Default: `chef-client`.)",
+    ]
+
     #
     # Create core acceptance commands
     #
@@ -39,6 +45,7 @@ module ChefAcceptance
       option(*option_timeout)
       option(*option_audit_mode)
       option(*option_data_path)
+      option(*option_chef_client_binary)
       define_method(command) do |test_suite_regex = ".*"|
         app = Application.new(options)
         app.run(test_suite_regex, command)
@@ -52,6 +59,7 @@ module ChefAcceptance
     option(*option_timeout)
     option(*option_audit_mode)
     option(*option_data_path)
+    option(*option_chef_client_binary)
     def test(test_suite_regex = ".*")
       app = Application.new(options)
       app.run(test_suite_regex, "test")

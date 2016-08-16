@@ -5,6 +5,7 @@ require "bundler"
 require "chef-acceptance/acceptance_cookbook"
 require "chef-acceptance/logger"
 require "chef-acceptance/options"
+require "shellwords"
 
 module ChefAcceptance
 
@@ -32,12 +33,6 @@ module ChefAcceptance
     def run!
       # prep and create chef attribute and config file
       prepare_required_files
-
-      chef_shellout = build_shellout(
-        chef_config_file: chef_config_file,
-        dna_json_file: dna_json_file,
-        recipe: recipe
-      )
 
       Bundler.with_clean_env do
         begin
@@ -87,20 +82,14 @@ module ChefAcceptance
       create_file(chef_config_file, chef_config_template)
     end
 
-    def build_shellout(options = {})
-      recipe = options.fetch(:recipe)
-      chef_config_file = options.fetch(:chef_config_file)
-      dna_json_file = options.fetch(:dna_json_file)
+    def chef_shellout
+      args = Shellwords.join %W{
+        -z -c #{chef_config_file} --force-formatter -j #{dna_json_file}
+        -o #{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe} --no-color
+      }
+      command = "#{app_options.chef_client_binary} #{args}"
 
-      shellout = []
-      shellout << "chef-client -z"
-      shellout << "-c #{chef_config_file}"
-      shellout << "--force-formatter"
-      shellout << "-j #{dna_json_file}"
-      shellout << "-o #{AcceptanceCookbook::ACCEPTANCE_COOKBOOK_NAME}::#{recipe}"
-      shellout << "--no-color"
-
-      Mixlib::ShellOut.new(shellout.join(" "), live_stream: suite_logger, timeout: app_options.timeout)
+      Mixlib::ShellOut.new(command, live_stream: suite_logger, timeout: app_options.timeout)
     end
 
     def data_path

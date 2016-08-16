@@ -14,5 +14,6 @@ Gemfile.lock
 .kitchen/
 .kitchen.local.yml
 
+binstubs/
 pkg/
 .acceptance_data

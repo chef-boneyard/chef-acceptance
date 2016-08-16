@@ -36,7 +36,7 @@ context "ChefAcceptance::Cli" do
   end
 
   context "with invalid command" do
-    let(:options) { [ "non-existing"] }
+    let(:options) { %w{non-existing} }
     let(:failure_expected) { true }
 
     it "exits non-zero" do
@@ -47,7 +47,7 @@ context "ChefAcceptance::Cli" do
   end
 
   context "with invalid option" do
-    let(:options) { [ "test", "--non-existing" ] }
+    let(:options) { %w{test --non-existing} }
     let(:failure_expected) { true }
 
     it "exits non-zero" do
@@ -69,7 +69,7 @@ context "ChefAcceptance::Cli" do
   context "for a valid test suite" do
     %w{ provision verify destroy }.each do |command|
       context "with #{command} command" do
-        let(:options) { [ command, "test-suite" ] }
+        let(:options) { %w{#{command} test-suite} }
 
         it "runs successfully" do
           stdout = run_acceptance
@@ -82,7 +82,7 @@ context "ChefAcceptance::Cli" do
 
     context "with custom data_path and provision command" do
       let(:acceptance_data_path) { Dir.mktmpdir }
-      let(:options) { [ "provision", "test-suite", "--data-path=#{acceptance_data_path}" ] }
+      let(:options) { %W{provision test-suite --data-path=#{acceptance_data_path}} }
 
       it "runs successfully" do
         stdout = run_acceptance
@@ -119,6 +119,13 @@ context "ChefAcceptance::Cli" do
         end
         expect(stdout).not_to match(/force-destroy/)
         expect(acceptance_log).not_to match(/force-destroy/)
+      end
+    end
+
+    context "with test --chef-client-binary=/nonexistent-chef-client" do
+      let(:options) { %w{test --chef-client-binary=/nonexistent-chef-client} }
+      it "fails" do
+        expect { run_acceptance }.to raise_error(Errno::ENOENT)
       end
     end
   end
