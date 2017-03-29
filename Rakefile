@@ -1,18 +1,12 @@
 require "bundler"
 require "bundler/gem_tasks"
-require "rspec/core/rake_task"
 require "rubocop/rake_task"
 
-task default: :test
-
-desc "run unit tests"
-RSpec::Core::RakeTask.new(:unit) do |task|
-  task.pattern = "spec/unit/**/*_spec.rb"
-end
-
-desc "run integration tests"
-RSpec::Core::RakeTask.new(:integration) do |task|
-  task.pattern = "spec/integration/**/*_spec.rb"
+begin
+  require "rspec/core/rake_task"
+  RSpec::Core::RakeTask.new(:spec)
+rescue LoadError
+  puts "rspec is not available."
 end
 
 begin
@@ -22,8 +16,7 @@ begin
     task.options += ["--display-cop-names", "--no-color"]
   end
 rescue LoadError
-  puts "chefstyle/rubocop is not available.  gem install chefstyle to do style checking."
+  puts "chefstyle is not available."
 end
 
-desc "Run all tests"
-task test: [:style, :unit, :integration]
+task default: [ :spec, :style ]

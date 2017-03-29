@@ -6,9 +6,9 @@ describe ChefAcceptance::Application do
   let(:app_options) { {} }
   let(:failure_expected) { false }
   let(:suites) { [] }
-  let(:acceptance_log) {
+  let(:acceptance_log) do
     File.read(File.join(@acceptance_dir, ".acceptance_data", "logs", "acceptance.log"))
-  }
+  end
 
   before do
     @acceptance_dir = Dir.mktmpdir

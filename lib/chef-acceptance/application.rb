@@ -48,7 +48,7 @@ module ChefAcceptance
         work_queue = Queue.new
         suites.each { |s| work_queue << [s, command] }
 
-        workers = WORKER_POOL_SIZE.times.map do |_i|
+        workers = Array.new(WORKER_POOL_SIZE) do |_i|
           start_worker(work_queue)
         end
 

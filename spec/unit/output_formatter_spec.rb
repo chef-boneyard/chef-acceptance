@@ -3,11 +3,11 @@ require "chef-acceptance/output_formatter"
 
 describe ChefAcceptance::OutputFormatter do
   let(:formatter) { ChefAcceptance::OutputFormatter.new }
-  let(:test_rows) {
+  let(:test_rows) do
     unformatted_rows.map do |row|
       row = { suite: row[0], command: row[1], duration: row[2], error: row[3] }
     end
-  }
+  end
 
   context "when there are no rows" do
     let(:unformatted_rows) { [] }
@@ -21,11 +21,11 @@ describe ChefAcceptance::OutputFormatter do
   end
 
   context "when there is a single row" do
-    let(:unformatted_rows) {
+    let(:unformatted_rows) do
       [
         ["suite2", "destroy", 10000000000, false],
       ]
-    }
+    end
 
     it "outputs successfully" do
       test_rows.each do |r|
@@ -40,7 +40,7 @@ describe ChefAcceptance::OutputFormatter do
   end
 
   context "when there are many rows" do
-    let(:unformatted_rows) {
+    let(:unformatted_rows) do
       [
         ["suite1", "provision", 1, false],
         ["suite1", "verify", 1000, true],
@@ -49,7 +49,7 @@ describe ChefAcceptance::OutputFormatter do
         ["suite2", "verify", 1000000, false],
         ["suite2", "destroy", 10000000000, false],
       ]
-    }
+    end
 
     it "outputs successfully" do
       test_rows.each do |r|
