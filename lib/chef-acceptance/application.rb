@@ -151,6 +151,7 @@ module ChefAcceptance
         error = true
         raise
       ensure
+        runner.send_log_to_stdout
         output_formatter.add_row(suite: test_suite.name, command: command, duration: runner.duration, error: error)
       end
     end
