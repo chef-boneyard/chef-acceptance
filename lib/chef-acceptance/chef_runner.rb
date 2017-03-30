@@ -27,7 +27,8 @@ module ChefAcceptance
       @log_path = File.join(app_options.data_path, "logs", test_suite.name, "#{recipe}.log")
       @suite_logger = ChefAcceptance::Logger.new(
         log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
-        log_path: log_path
+        log_path: log_path,
+        stdout: false
       )
     end
 
@@ -57,7 +58,7 @@ module ChefAcceptance
     end
 
     def send_log_to_stdout
-      puts IO.read(log_path)
+      $stdout.write IO.read(log_path)
     end
 
     private

@@ -5,25 +5,32 @@ module ChefAcceptance
     attr_reader :log_path
     attr_reader :log_header
     attr_reader :file_logger
+    attr_reader :stdout_logger
 
     # Supported options:
     # log_path: full path to the log file
     # log_header: the prefix logger will print when logging messages.
-    def initialize(options = {})
-      @log_header = options.fetch(:log_header)
-      @log_path = options.fetch(:log_path)
+    # stdout: create stdout logger to stream to stdout when true
+    def initialize(log_header: "", log_path: "", stdout: true)
+      @log_header = log_header
+      @log_path = log_path
 
       # create the main logs directory
       FileUtils.mkdir_p(File.dirname(log_path))
 
       @file_logger = create_file_logger
 
-      log("Initialized [#{options[:log_path]}] logger...")
+      if stdout
+        @stdout_logger = create_stdout_logger
+      end
+
+      log("Initialized [#{log_path}] logger...")
     end
 
     # logs given message to the acceptance logs and stdout
     def log(message)
       file_logger.info(message)
+      stdout_logger.info(message) if stdout_logger
     end
 
     alias_method :<<, :log
@@ -36,6 +43,10 @@ module ChefAcceptance
       log_file.sync = true
 
       format_logger_for_acceptance(::Logger.new(log_file))
+    end
+
+    def create_stdout_logger
+      format_logger_for_acceptance(::Logger.new($stdout))
     end
 
     def format_logger_for_acceptance(logger)

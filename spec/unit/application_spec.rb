@@ -130,6 +130,7 @@ describe ChefAcceptance::Application do
             end
 
             allow(runner).to receive(:duration).and_return(10)
+            allow(runner).to receive(:send_log_to_stdout)
 
             expect(ChefAcceptance::ChefRunner).to receive(:new)
               .with(kind_of(ChefAcceptance::TestSuite), c, kind_of(ChefAcceptance::Options)).and_return(runner)
@@ -166,6 +167,7 @@ describe ChefAcceptance::Application do
           end
 
           allow(runner).to receive(:duration).and_return(10)
+          allow(runner).to receive(:send_log_to_stdout)
 
           expected_commands.each do |c|
             expect(ChefAcceptance::ChefRunner).to receive(:new).ordered
