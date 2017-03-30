@@ -13,9 +13,9 @@ context "ChefAcceptance::Cli" do
 
   let(:failure_expected) { false }
   let(:acceptance_data_path) { File.join(ACCEPTANCE_TEST_DIRECTORY, ".acceptance_data") }
-  let(:acceptance_log) {
+  let(:acceptance_log) do
     File.read(File.join(acceptance_data_path, "logs", "acceptance.log"))
-  }
+  end
 
   def suite_log_for(suite_name, command)
     File.read(File.join(acceptance_data_path, "logs", suite_name, "#{command}.log"))

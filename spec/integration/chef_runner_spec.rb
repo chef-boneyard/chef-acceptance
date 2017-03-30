@@ -9,7 +9,10 @@ context ChefAcceptance::ChefRunner do
   let(:runner) { ChefAcceptance::ChefRunner.new(test_suite, "provision", options_instance) }
 
   def run
-    capture(:stdout) { runner.run! }
+    capture(:stdout) do
+      runner.run!
+      runner.send_log_to_stdout
+    end
   end
 
   it "calls run" do

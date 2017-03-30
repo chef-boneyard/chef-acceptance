@@ -16,6 +16,7 @@ module ChefAcceptance
     attr_reader :duration
     attr_reader :app_options
     attr_reader :suite_logger
+    attr_reader :log_path
 
     def initialize(test_suite, recipe, app_options)
       @test_suite = test_suite
@@ -23,9 +24,11 @@ module ChefAcceptance
       @recipe = recipe
       @duration = 0
       @app_options = app_options
+      @log_path = File.join(app_options.data_path, "logs", test_suite.name, "#{recipe}.log")
       @suite_logger = ChefAcceptance::Logger.new(
         log_header: "#{test_suite.name.upcase}::#{recipe.upcase}",
-        log_path: File.join(app_options.data_path, "logs", test_suite.name, "#{recipe}.log")
+        log_path: log_path,
+        stdout: false
       )
     end
 
@@ -52,6 +55,10 @@ module ChefAcceptance
         @duration = chef_shellout.execution_time || 0
         chef_shellout.error! # This will only raise an error if there was one
       end
+    end
+
+    def send_log_to_stdout
+      $stdout.write IO.read(log_path)
     end
 
     private
